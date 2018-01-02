@@ -1,0 +1,24 @@
+<!--
+  Generated template for the CuentaBancariaPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="secondary">
+    <ion-title>Cuentas Bancarias</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <ion-list>
+        <button ion-item *ngFor="let banco of cuentasBanco" (click)="gotoSubcuentaListPage(banco.idCuentaBanco, banco.nombre)">          
+          <h2>{{ banco.nombre }}</h2>          
+          <p>{{ banco.descripcion }}</p>
+          <ion-note item-end>$ {{ banco.saldo }}</ion-note>
+        </button>
+    </ion-list>
+</ion-content>

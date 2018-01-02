@@ -1,0 +1,24 @@
+<!--
+  Generated template for the SubcuentaPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="secondary">
+    <ion-title>{{nombreBancoSelected}}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list>
+    <button ion-item *ngFor="let subcta of subcuentas" (click)="gotoDetalleMovimientosPage(subcta.idSubCuenta, subcta.nombre, subcta.saldo)">          
+      <h2>{{ subcta.nombre }}</h2>          
+      <p>{{ subcta.descripcion }}</p>
+      <ion-note item-end>$ {{ subcta.saldo }}</ion-note>
+    </button>
+</ion-list>
+</ion-content>

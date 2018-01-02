@@ -1,0 +1,76 @@
+<!--
+  Generated template for the RegistraCargoAbonoPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="secondary">      
+          <table width="100%">
+            <tr>
+              <td>
+                  <ion-title>{{nombre  | slice:0:18 }}</ion-title>
+              </td>
+              <td >
+                  <div text-right>
+                  <button ion-button round  color="light" (click)="presentActionSheet()">
+                      <ion-icon name="images"></ion-icon>                      
+              </button>
+            </div>
+              </td>
+            </tr>
+          </table>
+                
+      
+    
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="action-sheets-basic-page">
+
+
+  <button ion-button color="danger" outline>Cargo</button>
+  <button ion-button color="danger" dark>Abono</button>
+
+
+  <ion-card>
+    <ion-item>
+      <ion-label floating>{{etiquetaTipoOperacion}}</ion-label>     
+      <ion-input type="number" placeholder="$" class="monto-operacion"  [value]="txtMonto" [(ngModel)]="txtMonto" (focus)="activaMontoField($event);"></ion-input>
+    </ion-item>
+  </ion-card>
+
+  <ion-item>
+    <ion-label floating>Concepto</ion-label>     
+    <ion-input type="text" [value]="txtConcepto" [(ngModel)]="txtConcepto"></ion-input>    
+
+  </ion-item>
+ 
+  
+  <ion-item *ngIf="isNotaActivada">
+      <ion-label floating>Descripcion</ion-label>      
+      <ion-textarea [value]="txtNota" [(ngModel)]="txtNota"></ion-textarea>
+    </ion-item>
+  <br>
+    <button ion-button full icon-end (click)="registraMovimiento()">        
+        Registrar
+        <ion-icon name="arrow-forward"></ion-icon>
+    </button>
+</ion-content>
+
+
+<ion-footer>
+  <ion-toolbar color="{{colorFooterTipoOperacion}}">
+    <ion-item>
+      <ion-range min="1" max="2" step="1" snaps="false" [(ngModel)]="warmth" color="cargo" (ionChange)="tipoOperacion(3)">
+        <ion-icon [ngClass]="{'iconGrande' : (zoomIconRangeAbono == 1), 'iconPequeno':(zoomIconRangeAbono == 0)}" range-left color="abono"
+          name="add-circle" (click)="tipoOperacion(1)"></ion-icon>
+        <ion-icon [ngClass]="{'iconGrande' : (zoomIconRangeCargo == 1), 'iconPequeno':(zoomIconRangeCargo == 0)}" range-right color="cargo"
+          name="remove-circle" (click)="tipoOperacion(2)"></ion-icon>
+      </ion-range>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>
