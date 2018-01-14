@@ -1,0 +1,62 @@
+<!--
+  Generated template for the VerMovimientoPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="silver">
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">Cerrar</button>
+    </ion-buttons>
+    <ion-title>Detalle del movimiento</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+
+  <ion-card>
+
+      <ion-card-content>
+    <h2>
+        <strong>
+        {{concepto}}
+      </strong>  
+    </h2>
+  </ion-card-content>
+    <ion-item>
+      <ion-avatar item-left *ngIf="naturaleza=='A'">
+        <img src="assets/images/icon-compra.jpg" alt="">
+      </ion-avatar>
+
+      <ion-avatar item-left *ngIf="naturaleza=='C'">
+          <img src="assets/images/icon-venta.jpg" alt="">
+        </ion-avatar>
+
+      <h2>{{usuario}}</h2>
+      <p>{{fechaAplicacion}}</p>
+      <ion-note item-end>$ {{monto}}</ion-note>
+    </ion-item>
+
+    <p></p>
+
+    <ion-card-content>
+      <p style="font-style: italic;">
+          {{nota}}
+      </p>
+    </ion-card-content>
+
+    <button ion-button icon-right clear (click)="editarMovimiento()">
+      <ion-icon name="create"></ion-icon>
+
+    </button>
+
+
+
+  </ion-card>
+
+</ion-content>

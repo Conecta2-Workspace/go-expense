@@ -24,7 +24,9 @@ export class MovimientoService {
    * @param naturaleza A | C
    * @param monto 
    */
-  public registraMovimiento(idEmpresa: string,
+  public registraMovimiento(
+    idMovimiento: number,
+    idEmpresa: string,
     uuid: string,
     idCuenta: string,
     tipoCuenta: string,
@@ -35,7 +37,7 @@ export class MovimientoService {
 
     let fechaAplicacion: String = new Date().toISOString();
 
-    let dataPost = JSON.stringify({ idEmpresa: idEmpresa, uuid: uuid, idCuenta: idCuenta, tipoCuenta: tipoCuenta, concepto: concepto, naturaleza: naturaleza, monto: monto, fechaAplicacion: fechaAplicacion, nota:nota });
+    let dataPost = JSON.stringify({ idEmpresa: idEmpresa, uuid: uuid, idCuenta: idCuenta, tipoCuenta: tipoCuenta, concepto: concepto, naturaleza: naturaleza, monto: monto, fechaAplicacion: fechaAplicacion, nota: nota, idMovimiento: idMovimiento.toString()  });
     let promise = new Promise((resolve, reject) => {
 
       this.PROXY.postHTTP(this.movimientosAPI+"?do=registrarMovimiento", dataPost)

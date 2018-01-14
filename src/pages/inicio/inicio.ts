@@ -19,6 +19,8 @@ import { RegistraCargoAbonoPage } from '../registra-cargo-abono/registra-cargo-a
 })
 export class InicioPage {
   private subcuentas: any;  
+  private tipoOperacionRegMov: string;
+  private idCuentaRegMov: string;  
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -35,6 +37,9 @@ export class InicioPage {
     //~Arranca servicio de RED
     this.GLOBAL.iniciaServicioDatosRed();
 
+    //~Parametros de regreso del registro de movimientos    
+    this.tipoOperacionRegMov = this.navParams.get('tipoOperacion');
+    this.idCuentaRegMov = this.navParams.get('idCuenta');
 
     let loader = this.loadingController.create();
     loader.present();

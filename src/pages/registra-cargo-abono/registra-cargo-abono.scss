@@ -19,8 +19,17 @@ page-registra-cargo-abono {
         height: 20vh;
         }
 
-    
-    
+    .btnOperacion{
+        width: 45%;        
+    }
+    .claseCargoActivo{
+        background-color: #ee2b47;
+        color: white;
+    }
+    .claseCargoInactivo{
+        background-color: white;
+        color: #ee2b47;
+    }
 }
 
 
@@ -31,5 +40,9 @@ page-registra-cargo-abono {
     .ion-md-clipboard {
       color: rgb(236, 214, 13);
     }
+
+    .ion-md-list-box {
+        color: forestgreen;
+      }
   
   }

@@ -23,6 +23,7 @@ import { CuentaBancariaPageModule } from '../pages/cuenta-bancaria/cuenta-bancar
 import { SubcuentaPageModule } from '../pages/subcuenta/subcuenta.module';
 import { RegistraCargoAbonoPageModule } from '../pages/registra-cargo-abono/registra-cargo-abono.module';
 import { DetalleMovimientosPageModule } from '../pages/detalle-movimientos/detalle-movimientos.module';
+import { VerMovimientoPageModule } from '../pages/ver-movimiento/ver-movimiento.module';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { DetalleMovimientosPageModule } from '../pages/detalle-movimientos/detal
     SubcuentaPageModule,
     RegistraCargoAbonoPageModule,
     DetalleMovimientosPageModule,
+    VerMovimientoPageModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot({
       name: '__goexpense',

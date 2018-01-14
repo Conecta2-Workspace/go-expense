@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Storage } from '@ionic/storage';
 import { Device } from '@ionic-native/device';
 import { Network } from '@ionic-native/network';
 
@@ -8,8 +7,7 @@ export class GlobalService {
   public estatusRed: string = "/";
   public tipoRed: string = "/";  
 
-  constructor(private BD: Storage,
-              private device: Device,
+  constructor(private device: Device,
               private network:Network) {
   }
 
@@ -30,10 +28,10 @@ export class GlobalService {
    */
   public getUrlKnt2(){
     //~Produccion     
-    return "http://knt2.com/app/";
+    //return "http://knt2.com/app/";
 
     //~Pruebas
-    //return "http://localhost/";
+    return "http://localhost/";
   }
   
   public iniciaServicioDatosRed(){

@@ -61,7 +61,7 @@ export class SubcuentaPage {
 
 
   gotoDetalleMovimientosPage(item, nombre, saldo){
-    this.navCtrl.push(DetalleMovimientosPage, {id:item, nombre:nombre, saldo:saldo});
+    this.navCtrl.push(DetalleMovimientosPage, {id:item, nombre:nombre, saldo:saldo, tipoCuenta:"SUBCTA"});
   }
 
 }

@@ -7,6 +7,7 @@
 <ion-header>
 
   <ion-navbar color="primary" hideBackButton="true">
+      <button ion-button menuToggle icon-only> <ion-icon name='menu'></ion-icon> </button>
     <ion-title>GO Expense</ion-title>
   </ion-navbar>
 
@@ -20,8 +21,10 @@
   <ion-list>
     <button ion-item *ngFor="let subcta of subcuentas" (click)="gotoRegistraCargoAbono(subcta.idSubCuenta, subcta.nombre)">
       <h2>{{ subcta.nombre }}</h2>
-      <p>{{ subcta.descripcion }}</p>
-      <ion-note item-end>$ {{ subcta.saldo }}</ion-note>
+      <p>{{ subcta.descripcion }}</p>      
+      <ion-note *ngIf="idCuentaRegMov==subcta.idSubCuenta && tipoOperacionRegMov=='C'" style="color:red" item-end>$ {{ subcta.saldo }}</ion-note>    
+      <ion-note *ngIf="idCuentaRegMov==subcta.idSubCuenta && tipoOperacionRegMov=='A'" style="color:blue" item-end>$ {{ subcta.saldo }}</ion-note>
+      <ion-note *ngIf="idCuentaRegMov!=subcta.idSubCuenta" item-end>$ {{ subcta.saldo }}</ion-note>    
     </button>
   </ion-list>
 </ion-content>

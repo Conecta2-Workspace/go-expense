@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ActionSheetController, Platform, A
 import { MovimientoService } from '../../services/movimientos.service'
 import { GlobalService } from '../../services/GLOBAL.service'
 import { InicioPage } from '../inicio/inicio'
+import { DetalleMovimientosPage } from '../detalle-movimientos/detalle-movimientos'
 import { ToastController } from 'ionic-angular';
 
 /**
@@ -18,23 +19,36 @@ import { ToastController } from 'ionic-angular';
   templateUrl: 'registra-cargo-abono.html',
 })
 export class RegistraCargoAbonoPage {
-  private colorFooterTipoOperacion: string;
-  private etiquetaTipoOperacion: string = " ";
 
-  private warmth: number = 2;
+  //~Entrada
   private nombre: string;
   private id: string;
   private tipoCta: string;
-  private zoomIconRangeAbono: number;
-  private zoomIconRangeCargo: number = 1;
 
-  private isNotaActivada;
+  //~Edicion
+  private isModoEdicion: boolean= false;
+  private idMovimientoEdicion: number = 0;
+  private conceptoEdicion: string;
+  private naturalezaEdicion: string;
+  private montoEdicion: any;
+  private notaEdicion: string;
+  private idCuentaEdicion: number;
+  private tipoCtaEdicion: string;
 
   //~Inputs
   private txtConcepto: string;
   private txtMonto: number;
-  private txtNota: string;
+  private txtNota: string="";
+  private isNotaActivada;
 
+  //~Eleccion cargo/abono
+  private operacion: string; //C o A
+  private estiloTextoBotonCargo: String="red";
+  private estiloFondoBotonCargo: String="white";
+
+  private estiloTextoBotonAbono: String="blue";
+  private estiloFondoBotonAbono: String="white";
+  
 
   constructor(  private navCtrl: NavController, 
                 private navParams: NavParams, 
@@ -44,39 +58,62 @@ export class RegistraCargoAbonoPage {
                 private GLOBAL: GlobalService,
                 private toastCtrl: ToastController,
                 public alertController : AlertController) {
-    this.colorFooterTipoOperacion="cargo";
+    
     this.id = this.navParams.get('id');
     this.nombre = this.navParams.get('nombre');
     this.tipoCta = this.navParams.get('tipoCta');
+    
+    //~Campos edicion
+    this.idMovimientoEdicion = this.navParams.get('idMovimientoEdicion');
+    this.conceptoEdicion = this.navParams.get('conceptoEdicion');
+    this.naturalezaEdicion = this.navParams.get('naturalezaEdicion');
+    this.montoEdicion = this.navParams.get('montoEdicion');
+    this.notaEdicion = this.navParams.get('notaEdicion');
+    this.idCuentaEdicion= this.navParams.get('idCuentaEdicion');
+    this.tipoCtaEdicion= this.navParams.get('tipoCtaEdicion');
+
+    if(this.idMovimientoEdicion>0){
+      this.isModoEdicion= true;
+    }else{
+      this.idMovimientoEdicion=0;
+    }
 
     this.isNotaActivada = false;
+
+    //~Operacion default
+    this.setOperacion('C');
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad RegistraCargoAbonoPage');
-  }
-
-  tipoOperacion(tipo){
-    if(tipo==1){
-      this.colorFooterTipoOperacion="abono";
-      this.warmth = 1;
-      this.zoomIconRangeAbono = 1;
-      this.zoomIconRangeCargo = 0;
-      this.etiquetaTipoOperacion = "$ Abono(+)";
-    }else if (tipo==2){
-      this.colorFooterTipoOperacion="cargo";
-      this.warmth = 2;
-      this.zoomIconRangeAbono = 0;
-      this.zoomIconRangeCargo = 1;
-      this.etiquetaTipoOperacion = "$ Cargo(-)";
-    }else if (tipo==3){      
-      this.tipoOperacion(this.warmth);
+    //~Precarga informacion si inicia modo edicion
+    if(this.isModoEdicion){
+      this.txtConcepto = this.conceptoEdicion;
+      this.operacion = this.naturalezaEdicion;
+      this.txtMonto = this.montoEdicion;
+      this.txtNota = this.notaEdicion;
+      this.id = this.idCuentaEdicion.toString();
+      this.tipoCta = this.tipoCtaEdicion;
+      this.nombre = "Editando #"+ this.idMovimientoEdicion;
+      this.setOperacion(this.operacion);
     }
   }
 
-  activaMontoField(e){
-    this.tipoOperacion(this.warmth);
+  setOperacion(tipo){
+    this.operacion = tipo;
+
+    if(tipo=="C"){      
+      this.estiloTextoBotonCargo="white";
+      this.estiloFondoBotonCargo="red";
+      this.estiloTextoBotonAbono="blue";
+      this.estiloFondoBotonAbono="white";
+    }else{
+      this.estiloTextoBotonAbono="white";
+      this.estiloFondoBotonAbono="blue";
+      this.estiloTextoBotonCargo="red";
+      this.estiloFondoBotonCargo="white";
+    }
   }
+
 
   presentActionSheet() {
     let actionSheet = this.actionSheetController.create({
@@ -96,6 +133,12 @@ export class RegistraCargoAbonoPage {
             console.log('Archive clicked');
           }
         },{
+          text: 'Detalle de movimientos',
+          icon: !this.platform.is('ios') ? 'list-box' : null,
+          handler: () => {            
+            this.navCtrl.push(DetalleMovimientosPage, {id:this.id, nombre:this.nombre, saldo:0, tipoCuenta:this.tipoCta});            
+          }
+        },{
           text: 'Cancel',
           role: 'cancel',
           icon: !this.platform.is('ios') ? 'arrow-back' : null,
@@ -112,12 +155,9 @@ export class RegistraCargoAbonoPage {
    * Consume servicio para registrar el movimiento
    */
   registraMovimiento(){
-    let naturaleza = 'A';
-    if(this.warmth == 2){
-      naturaleza = 'C';
-    }
+    let naturaleza = this.operacion;    
         
-    this.registraMovimientoService.registraMovimiento('evert.nicolas@gmail.com',this.GLOBAL.getUUID(),this.id,this.tipoCta,this.txtConcepto,naturaleza,this.txtMonto.toString(), this.txtNota)
+    this.registraMovimientoService.registraMovimiento(this.idMovimientoEdicion, 'evert.nicolas@gmail.com',this.GLOBAL.getUUID(),this.id,this.tipoCta,this.txtConcepto,naturaleza,this.txtMonto.toString(), this.txtNota)
     .then((data)=>{
       console.log(data);
 
@@ -126,14 +166,19 @@ export class RegistraCargoAbonoPage {
 
       console.log(milliseconds);
 
+      let etiquetaOperacion = "cargo";
+      if(this.operacion=="A"){
+        etiquetaOperacion = "abono";
+      }
+
       let toast = this.toastCtrl.create({
-        message: 'Se registro correctamente el '+this.colorFooterTipoOperacion,
+        message: 'Se registro correctamente el '+etiquetaOperacion,
         duration: 3000,
         position: 'top'
       });
       toast.present();
 
-      this.navCtrl.push(InicioPage);
+      this.navCtrl.push(InicioPage,{tipoOperacion:this.operacion, idCuenta:this.id});
 
     }).catch(error=>{      
 

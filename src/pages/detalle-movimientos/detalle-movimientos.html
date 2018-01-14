@@ -6,9 +6,8 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>{{nombreCuentaSelected}}
-      <p>$ {{saldoSelected}}</p>
+  <ion-navbar color="light">
+    <ion-title>{{nombreCuentaSelected}}            
     </ion-title>
   </ion-navbar>
 
@@ -17,10 +16,10 @@
 
 <ion-content padding>
   <ion-list>
-    <button ion-item *ngFor="let mov of listaMovimientosByCuenta">
-      <h2><span class="fechaApliDetaMov">{{ mov.fechaAplicacion }}</span> {{ mov.concepto }}</h2>          
-      <p>{{ mov.usuario }}</p>
+    <button ion-item *ngFor="let mov of listaMovimientosByCuenta" (click)="modalDetalleMovimiento(mov.idMovimiento, mov.concepto, mov.monto, mov.fechaAplicacion, mov.fechaReg, mov.usuario, mov.nota, mov.naturaleza)">
+      <h2> {{ mov.concepto }}</h2>      
       <ion-note item-end>$ {{ mov.monto }}</ion-note>
+      <p><span class="fechaApliDetaMov">{{ mov.fechaAplicacion }}</span></p>
     </button>
 </ion-list>
 </ion-content>
