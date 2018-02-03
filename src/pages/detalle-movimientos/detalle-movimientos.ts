@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { MovimientoService } from '../../services/movimientos.service'
 import { VerMovimientoPage } from '../ver-movimiento/ver-movimiento'
-import { asTextData } from '@angular/core/src/view';
+import { RegistraCargoAbonoPage } from '../registra-cargo-abono/registra-cargo-abono'
+//import { asTextData } from '@angular/core/src/view';
 
 /**
  * Generated class for the DetalleMovimientosPage page.
@@ -66,6 +67,10 @@ export class DetalleMovimientosPage {
   modal.present();
   modal.onDidDismiss(data=>console.log(data));
 
+  }
+
+  gotoRegistraMov(){
+    this.navCtrl.push(RegistraCargoAbonoPage, {id:this.idCuentaSelected, nombre:this.nombreCuentaSelected, tipoCta: this.tipoCuentaSelected});
   }
 
 }

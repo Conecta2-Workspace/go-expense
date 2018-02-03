@@ -8,13 +8,17 @@
 
   <ion-navbar color="light" >
     <button ion-button menuToggle="right" icon-only > <ion-icon name='menu'></ion-icon> </button>
-    <ion-title>{{nombreBancoSelected}}</ion-title>
+    <ion-title>{{nombreBancoSelected}}</ion-title>    
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
+
+  
+    
+
   <ion-list>
     <button ion-item *ngFor="let subcta of subcuentas" (click)="gotoDetalleMovimientosPage(subcta.idSubCuenta, subcta.nombre, subcta.saldo)">          
       <h2>{{ subcta.nombre }}</h2>          
