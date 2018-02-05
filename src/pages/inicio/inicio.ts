@@ -72,4 +72,7 @@ export class InicioPage {
     this.navCtrl.push(RegistraCargoAbonoPage, {id:id, nombre:nombre, tipoCta:'SUBCTA'});
   }
 
+  refreshInicio(){
+    this.ionViewDidLoad();
+  }
 }

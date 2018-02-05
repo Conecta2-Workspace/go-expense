@@ -14,7 +14,6 @@ $salida = array(
 			);
 //echo json_encode($salida);
 //echo "<br>";echo "<br>";
-			
 
 $salida = array(
 			"exito"=>1,
