@@ -15,6 +15,12 @@
 
 
 <ion-content padding>
+
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+      
+
   Detalle de movimientos:
 
   <ion-fab top right edge>
@@ -24,7 +30,7 @@
   <ion-list>
     <button ion-item *ngFor="let mov of listaMovimientosByCuenta" (click)="modalDetalleMovimiento(mov.idMovimiento, mov.concepto, mov.monto, mov.fechaAplicacion, mov.fechaReg, mov.usuario, mov.nota, mov.naturaleza)">
       <h2> {{ mov.concepto }}</h2>      
-      <ion-note item-end>$ {{ mov.monto }}</ion-note>
+      <ion-note item-end>$ {{ GLOBAL.formatNumeroMoneda( mov.monto ) }}</ion-note>
       <p><span class="fechaApliDetaMov">{{ mov.fechaAplicacion }}</span></p>
     </button>
 </ion-list>

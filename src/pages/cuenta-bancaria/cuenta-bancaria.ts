@@ -2,6 +2,7 @@ import { Component, ViewChild  } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';
 import { CuentaBancoService } from '../../services/cuentaBanco.service'
 import { SubcuentaPage } from '../../pages/subcuenta/subcuenta';
+import { GlobalService } from '../../services/GLOBAL.service'
 
 /**
  * Generated class for the CuentaBancariaPage page.
@@ -25,7 +26,8 @@ export class CuentaBancariaPage {
                 public navParams: NavParams, 
                 public cuentaBancoService: CuentaBancoService,
                 public loadingController: LoadingController,
-                public alertController : AlertController ) {
+                public alertController : AlertController,
+                private GLOBAL: GlobalService ) {
     
   }
 
@@ -52,8 +54,23 @@ export class CuentaBancariaPage {
   }
 
 
+
+
   gotoSubcuentaListPage(item, nombre){
     this.navCtrl.push(SubcuentaPage, {id:item, nombre:nombre});
+  }
+
+
+  doRefresh(refresher) {
+    
+        console.log('Begin async operation', refresher);
+    
+        this.ionViewDidLoad();
+    
+        setTimeout(() => {
+          console.log('Async operation has ended');
+          refresher.complete();
+        }, 1000);
   }
 
 }

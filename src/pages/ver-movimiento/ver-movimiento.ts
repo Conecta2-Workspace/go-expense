@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { RegistraCargoAbonoPage } from '../registra-cargo-abono/registra-cargo-abono'
+import { GlobalService } from '../../services/GLOBAL.service'
 
 /**
  * Generated class for the VerMovimientoPage page.
@@ -27,7 +28,7 @@ export class VerMovimientoPage {
   private idCuenta: number;
   private tipoCuenta: string;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private viewCtrl : ViewController ) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private viewCtrl : ViewController, private GLOBAL:GlobalService ) {
 
     this.idMovimiento = this.navParams.get('idMovimiento');
     this.concepto = this.navParams.get('concepto');

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ActionSheetController, Platform, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ActionSheetController, Platform, AlertController, ViewController } from 'ionic-angular';
 import { MovimientoService } from '../../services/movimientos.service'
 import { GlobalService } from '../../services/GLOBAL.service'
 import { InicioPage } from '../inicio/inicio'
@@ -57,7 +57,8 @@ export class RegistraCargoAbonoPage {
                 private registraMovimientoService: MovimientoService,
                 private GLOBAL: GlobalService,
                 private toastCtrl: ToastController,
-                public alertController : AlertController) {
+                public alertController : AlertController,
+                private viewCtrl : ViewController) {
     
     this.id = this.navParams.get('id');
     this.nombre = this.navParams.get('nombre');
@@ -178,7 +179,9 @@ export class RegistraCargoAbonoPage {
       });
       toast.present();
 
-      this.navCtrl.push(InicioPage,{tipoOperacion:this.operacion, idCuenta:this.id});
+      //this.navCtrl.push(InicioPage,{tipoOperacion:this.operacion, idCuenta:this.id});
+
+      this.viewCtrl.dismiss({tipoOperacion:this.operacion, idCuenta:this.id});
 
     }).catch(error=>{      
 
@@ -192,6 +195,11 @@ export class RegistraCargoAbonoPage {
 
 
 
+  }
+
+
+  dismiss() {
+    this.viewCtrl.dismiss({tipoOperacion:this.operacion, idCuenta:this.id});
   }
 
 }

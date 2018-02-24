@@ -24,5 +24,18 @@
         <strong>Estatus de la red:</strong>{{GLOBAL.tipoRed}}    {{GLOBAL.estatusRed}}        
       </ion-card-content>
     
-    </ion-card>
+  </ion-card>
+
+
+  <ion-card>
+    
+      <ion-card-content>
+        <button ion-button (click)="tomaFoto()">Test camara</button>
+
+        <img src="{{base64Image}}" />
+      </ion-card-content>
+    
+  </ion-card>
+
+    
 </ion-content>

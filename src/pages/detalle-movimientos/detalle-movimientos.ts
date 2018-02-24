@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angu
 import { MovimientoService } from '../../services/movimientos.service'
 import { VerMovimientoPage } from '../ver-movimiento/ver-movimiento'
 import { RegistraCargoAbonoPage } from '../registra-cargo-abono/registra-cargo-abono'
+import { GlobalService } from '../../services/GLOBAL.service'
 //import { asTextData } from '@angular/core/src/view';
 
 /**
@@ -27,7 +28,8 @@ export class DetalleMovimientosPage {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public registraMovimientoService: MovimientoService,
-              private modalController: ModalController) {
+              private modalController: ModalController,
+              private GLOBAL:GlobalService) {
   }
 
   ionViewDidLoad() {
@@ -36,7 +38,12 @@ export class DetalleMovimientosPage {
     this.saldoSelected = this.navParams.get('saldo');
     this.tipoCuentaSelected = this.navParams.get('tipoCuenta');
 
-    this.registraMovimientoService.getDetalleMovimientos(this.idCuentaSelected)
+    this.getListaMovimientos(this.idCuentaSelected);
+    
+  }
+
+  getListaMovimientos(idCuentaSelected){
+    this.registraMovimientoService.getDetalleMovimientos(idCuentaSelected)
     .then((data)=>{
       console.log(data);
       this.listaMovimientosByCuenta = data;
@@ -71,6 +78,19 @@ export class DetalleMovimientosPage {
 
   gotoRegistraMov(){
     this.navCtrl.push(RegistraCargoAbonoPage, {id:this.idCuentaSelected, nombre:this.nombreCuentaSelected, tipoCta: this.tipoCuentaSelected});
+  }
+
+
+  doRefresh(refresher) {
+
+    console.log('Begin async operation', refresher);
+
+    this.getListaMovimientos(this.idCuentaSelected);
+
+    setTimeout(() => {
+      console.log('Async operation has ended');
+      refresher.complete();
+    }, 1000);
   }
 
 }

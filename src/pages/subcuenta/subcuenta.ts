@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';
 import { SubCuentaService } from '../../services/subcuenta.service'
 import { DetalleMovimientosPage } from '../detalle-movimientos/detalle-movimientos'
+import { GlobalService } from '../../services/GLOBAL.service'
 
 /**
  * Generated class for the SubcuentaPage page.
@@ -24,7 +25,8 @@ export class SubcuentaPage {
               public navParams: NavParams,
               public subCuentaService: SubCuentaService,
               public loadingController: LoadingController,
-              public alertController : AlertController) {
+              public alertController : AlertController,
+              private GLOBAL:GlobalService) {
 
     
   }
@@ -32,11 +34,16 @@ export class SubcuentaPage {
   ionViewDidLoad() {
     this.idCuentaBancoSelected = this.navParams.get('id');
     this.nombreBancoSelected = this.navParams.get('nombre');
+    this.getSubcuentas(this.idCuentaBancoSelected);
+    
+    
+  }
 
+  getSubcuentas(idCuentaBancoSelected){
     let loader = this.loadingController.create();
     loader.present();
 
-    this.subCuentaService.getSubCuentaByBanco(this.idCuentaBancoSelected)
+    this.subCuentaService.getSubCuentaByBanco(idCuentaBancoSelected)
     .then((subcuentas:any) => {
       loader.dismiss();            
       
@@ -56,12 +63,24 @@ export class SubcuentaPage {
         buttons: ['OK']
       }).present();
     });        
-    
   }
 
 
   gotoDetalleMovimientosPage(item, nombre, saldo){
     this.navCtrl.push(DetalleMovimientosPage, {id:item, nombre:nombre, saldo:saldo, tipoCuenta:"SUBCTA"});
+  }
+
+
+  doRefresh(refresher) {
+    
+        console.log('Begin async operation', refresher);
+    
+        this.getSubcuentas(this.idCuentaBancoSelected);
+    
+        setTimeout(() => {
+          console.log('Async operation has ended');
+          refresher.complete();
+        }, 1000);
   }
 
 }

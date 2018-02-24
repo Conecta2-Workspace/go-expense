@@ -7,6 +7,7 @@ import { Network } from '@ionic-native/network';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { Camera } from '@ionic-native/camera';
 
 import { ProxyService } from '../services/PROXY.service';
 import { GlobalService } from '../services/GLOBAL.service';
@@ -55,6 +56,7 @@ import { VerMovimientoPageModule } from '../pages/ver-movimiento/ver-movimiento.
     Network,
     StatusBar,
     SplashScreen,
+    Camera,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     ProxyService, GlobalService,
     CuentaBancoService, SubCuentaService, MovimientoService

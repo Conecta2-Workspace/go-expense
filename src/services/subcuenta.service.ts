@@ -18,7 +18,7 @@ export class SubCuentaService {
 
   public getSubCuentaByBanco(idCuentaBanco) {
     if (idCuentaBanco == -1) {
-      this.subCuentaAPI = this.subCuentaAPI;
+      this.subCuentaAPI = this.GLOBAL.getUrlKnt2() + "goexpense/SubCuentaService.php";
     } else {
       this.subCuentaAPI = this.GLOBAL.getUrlKnt2() + "goexpense/SubCuentaService.php";
       this.subCuentaAPI = this.subCuentaAPI + "?idCuentaBanco=" + idCuentaBanco;

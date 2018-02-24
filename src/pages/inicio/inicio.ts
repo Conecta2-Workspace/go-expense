@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, AlertController, ModalController } from 'ionic-angular';
 import { SubCuentaService } from '../../services/subcuenta.service'
 import { GlobalService } from '../../services/GLOBAL.service'
 import { RegistraCargoAbonoPage } from '../registra-cargo-abono/registra-cargo-abono'
@@ -21,13 +21,15 @@ export class InicioPage {
   private subcuentas: any;  
   private tipoOperacionRegMov: string;
   private idCuentaRegMov: string;  
+  private montoRegMov: number = 0;  
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     public subCuentaService: SubCuentaService,
     public loadingController: LoadingController,
     public alertController: AlertController,
-    private GLOBAL:GlobalService
+    private GLOBAL:GlobalService,
+    private modalController: ModalController
     ) {
 
   }
@@ -37,42 +39,66 @@ export class InicioPage {
     //~Arranca servicio de RED
     this.GLOBAL.iniciaServicioDatosRed();
 
-    //~Parametros de regreso del registro de movimientos    
-    this.tipoOperacionRegMov = this.navParams.get('tipoOperacion');
-    this.idCuentaRegMov = this.navParams.get('idCuenta');
+    //~Parametros de regreso del registro de movimientos        
+    this.cargaListaActualizadaSubCta(this.navParams.get('tipoOperacion'), this.navParams.get('idCuenta'));
 
-    let loader = this.loadingController.create();
-    loader.present();
+  }
 
-    this.subCuentaService.getSubCuentaByBanco(-1)//~Muestra todas las subcuentas
-      .then((subcuentas: any) => {
-        loader.dismiss();
-
-
-        this.subcuentas = subcuentas;
-
-        console.log(this.subcuentas);
-
-      }
-      ).catch(error => {
-        loader.dismiss();
-
-        //~Mensaje de error
-        this.alertController.create({
-          title: 'ERROR',
-          subTitle: 'No fue posible leer los datos. ' + error,
-          buttons: ['OK']
-        }).present();
-      });
-
+  cargaListaActualizadaSubCta(tipoOperacionRegMov, idCuentaRegMov){       
+        //~Parametros de regreso del registro de movimientos    
+        this.tipoOperacionRegMov = tipoOperacionRegMov;
+        this.idCuentaRegMov = idCuentaRegMov;
+    
+        let loader = this.loadingController.create();
+        loader.present();
+    
+        this.subCuentaService.getSubCuentaByBanco(-1)//~Muestra todas las subcuentas
+          .then((subcuentas: any) => {
+            loader.dismiss();
+    
+    
+            this.subcuentas = subcuentas;
+    
+            console.log(this.subcuentas);
+    
+          }
+          ).catch(error => {
+            loader.dismiss();
+    
+            //~Mensaje de error
+            this.alertController.create({
+              title: 'ERROR',
+              subTitle: 'No fue posible leer los datos. ' + error,
+              buttons: ['OK']
+            }).present();
+          });
   }
 
 
   gotoRegistraCargoAbono(id, nombre){
-    this.navCtrl.push(RegistraCargoAbonoPage, {id:id, nombre:nombre, tipoCta:'SUBCTA'});
+    //this.navCtrl.push(RegistraCargoAbonoPage, {id:id, nombre:nombre, tipoCta:'SUBCTA'});
+
+    let modal = this.modalController.create(RegistraCargoAbonoPage, {
+      id:id, 
+      nombre:nombre, 
+      tipoCta:'SUBCTA'
+  });
+  
+  
+  modal.present();
+  modal.onDidDismiss(data=>{
+
+    this.cargaListaActualizadaSubCta(data.tipoOperacion, data.idCuenta);
+
+  });
+
+
+
   }
 
   refreshInicio(){
     this.ionViewDidLoad();
   }
+
+  
 }

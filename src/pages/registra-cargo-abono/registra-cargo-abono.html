@@ -10,7 +10,7 @@
           <table width="100%">
             <tr>
               <td>
-                  <ion-title>{{nombre  | slice:0:18 }}</ion-title>
+                  <ion-title (click)="dismiss()">{{nombre  | slice:0:18 }}</ion-title>
               </td>
               <td >
                   <div text-right>

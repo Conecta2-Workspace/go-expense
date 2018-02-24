@@ -64,4 +64,28 @@ export class GlobalService {
     this.tipoRed= this.network.type;   
   }
 
+
+  public formatNumeroMoneda(valString) {
+    if (!valString) {
+        return '';
+    }
+    let val = valString.toString();
+    const parts = this.unFormat(val).split(".");
+    return parts[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + (!parts[1] ? '' : "." + parts[1]);
+    
+  }
+
+  private unFormat(val) {
+    if (!val) {
+        return '';
+    }
+    val = val.replace(/^0+/, '');
+
+    if ("," === ',') {
+        return val.replace(/,/g, '');
+    } else {
+        return val.replace(/\./g, '');
+    }
+}
+
 }

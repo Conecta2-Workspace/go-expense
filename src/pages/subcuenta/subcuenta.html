@@ -15,6 +15,10 @@
 
 
 <ion-content padding>
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+      
   Subcuentas:
   
     
@@ -23,7 +27,7 @@
     <button ion-item *ngFor="let subcta of subcuentas" (click)="gotoDetalleMovimientosPage(subcta.idSubCuenta, subcta.nombre, subcta.saldo)">          
       <h2>{{ subcta.nombre }}</h2>          
       <p>{{ subcta.descripcion }}</p>
-      <ion-note item-end>$ {{ subcta.saldo }}</ion-note>
+      <ion-note item-end>$ {{ GLOBAL.formatNumeroMoneda( subcta.saldo ) }}</ion-note>
     </button>
 </ion-list>
 </ion-content>
