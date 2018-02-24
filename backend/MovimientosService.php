@@ -26,4 +26,12 @@ if($_GET["do"]=="registrarMovimiento"){
 if($_GET["do"]=="getDetalleMovimientos"){
 	doGetDetalleMovimientos();
 }	
+
+if($_GET["do"]=="doGetListaMediosAcceso"){
+	doGetListaMediosAcceso();
+}	
+
+if($_GET["do"]=="doGetMovimientosRetenidos"){
+	doGetMovimientosRetenidos();
+}
 ?>

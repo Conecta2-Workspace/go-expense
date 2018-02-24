@@ -79,7 +79,7 @@ function getSubCuentasBanco($idCuentaBanco){
 	
 	//echo "salida====".$idCuentaBanco;
 	
-	$query = "SELECT ID_SUBCUENTA, ID_EMPRESA, CUENTA_EJE, NOMBRE, SALDO, DESCRIPCION, ESTATUS ";
+	$query = "SELECT ID_SUBCUENTA, ID_EMPRESA, CUENTA_EJE, NOMBRE, SALDO, SALDO_RETENIDO, SALDO_DISPONIBLE, DESCRIPCION, ESTATUS ";
 	$query.= "FROM SUBCUENTA ";
 	$query.= "WHERE ESTATUS = 1 ";
 	
@@ -87,7 +87,10 @@ function getSubCuentasBanco($idCuentaBanco){
 		$query.= " AND CUENTA_EJE = ".$idCuentaBanco." ";
 	}
 	
-	$query.= " ORDER BY RATING LIMIT 3";
+	//~Solo aplica para la pantalla de inicio
+	if($idCuentaBanco == -1 ){
+		$query.= " ORDER BY RATING LIMIT 10"; 
+	}
 
     if(!$result = $bd->query($query)){       
         echo "Lo sentimos, este sitio web está experimentando problemas.";    
@@ -107,6 +110,8 @@ function getSubCuentasBanco($idCuentaBanco){
 						"nombre"=>$line["NOMBRE"],
 						"descripcion"=>$line["DESCRIPCION"],
 						"saldo"=>$line["SALDO"],
+						"saldoRetenido"=>$line["SALDO_RETENIDO"],
+						"saldoDisponible"=>$line["SALDO_DISPONIBLE"],
 						"estatus"=>$line["ESTATUS"]						
 					  );
 		
@@ -135,6 +140,8 @@ function registraMovimiento($mov){
 	$monto = $mov["monto"];
 	$fechaAplicacion = $mov["fechaAplicacion"];
 	$nota = $mov["nota"];
+	$idMedioAcceso = $mov["idMedioAcceso"];
+	$operacionRetieneSaldoMA= $mov["operacionRetieneSaldoMA"];
 	
 	$idMovimiento = 0;
 	if(isset($mov["idMovimiento"])){
@@ -154,8 +161,16 @@ function registraMovimiento($mov){
 			
 		}    			
 	}else{
-		$query = "INSERT INTO DETALLE_MOVIMIENTO (ID_MOVIMIENTO, ID_EMPRESA, ID_USUARIO, ID_CUENTA, CONCEPTO, TIPO_CUENTA, NATURALEZA, FECHA_APLICACION, MONTO, FECHA_REG, ESTATUS, NOTA) ";
-		$query.= "VALUES ('0', '".$idEmpresa."', (SELECT ID_USUARIO FROM USUARIO WHERE UUID='".$uuid."'), '".$idCuenta."', '".$concepto."', '".$tipoCuenta."', '".$naturaleza."', '".$fechaAplicacion."', '".$monto."', NOW(), 'A', '".$nota."')";
+		
+		//~Calcula estatus
+		$estatus = "A";
+		if($operacionRetieneSaldoMA){
+			$estatus = "R";
+			$nota = "[RETENIDO] ".$nota;
+		}
+		
+		$query = "INSERT INTO DETALLE_MOVIMIENTO (ID_MOVIMIENTO, ID_EMPRESA, ID_USUARIO, ID_CUENTA, ID_MEDIO_ACCESO, CONCEPTO, TIPO_CUENTA, NATURALEZA, FECHA_APLICACION, MONTO, FECHA_REG, ESTATUS, NOTA) ";
+		$query.= "VALUES ('0', '".$idEmpresa."', (SELECT ID_USUARIO FROM USUARIO WHERE UUID='".$uuid."'), '".$idCuenta."', '".$idMedioAcceso."', '".$concepto."', '".$tipoCuenta."', '".$naturaleza."', '".$fechaAplicacion."', '".$monto."', NOW(), '".$estatus."', '".$nota."')";
 			
 			
 		if(!$result = $bd->query($query)){       
@@ -196,9 +211,9 @@ function getSaldoCuenta($id, $tipoCuenta, $idMovimiento){
 	
 		//~Se busca el saldo de la cuenta o subcuenta
 		if($tipoCuenta=="CTA"){		
-			$query = "SELECT SUM(SALDO) SALDO FROM CUENTA_BANCO WHERE ID_CUENTA_BANCO = $id ";
+			$query = "SELECT 0 SALDO_DISPONIBLE, SALDO, SALDO_RETENIDO FROM CUENTA_BANCO WHERE ID_CUENTA_BANCO = $id ";
 		}else{	
-			$query = "SELECT SUM(SALDO) SALDO FROM SUBCUENTA WHERE ID_SUBCUENTA = $id ";		
+			$query = "SELECT SALDO_DISPONIBLE, SALDO, SALDO_RETENIDO FROM SUBCUENTA WHERE ID_SUBCUENTA = $id ";		
 		}
 	
 	}
@@ -211,11 +226,16 @@ function getSaldoCuenta($id, $tipoCuenta, $idMovimiento){
         echo "Error: " . $bd->error . "\n";
         exit;
     }
-
-    $salida = 0;
+	
+	$salida = 0;	
     
     while ($line = $result->fetch_assoc()) {
-		$salida = $line["SALDO"];				        
+
+			$salida = array(	"saldo"=>$line["SALDO"],						
+								"saldoDisponible"=>$line["SALDO_DISPONIBLE"],
+								"saldoRetenido"=>$line["SALDO_RETENIDO"]
+							  );
+		
     }
     					
     
@@ -228,14 +248,13 @@ function getSaldoCuenta($id, $tipoCuenta, $idMovimiento){
 /**
 *Actualiza directamente el saldo de la cuenta
 **/
-function actualizaSaldoCuentaDuro($id, $tipoCuenta, $saldo){
-    $bd= conectaBD();
-	
+function actualizaSaldoCuentaDuro($id, $tipoCuenta, $saldo, $saldoRetenido, $saldoDisponible){
+    $bd= conectaBD();		
 	
 	if($tipoCuenta=="CTA"){
-		$query = "UPDATE CUENTA_BANCO  SET SALDO='$saldo' WHERE ID_CUENTA_BANCO = $id ";
+		$query = "UPDATE CUENTA_BANCO  SET SALDO='$saldo', SALDO_RETENIDO='$saldoRetenido' WHERE ID_CUENTA_BANCO = $id ";
 	}else{	
-		$query = "UPDATE SUBCUENTA SET SALDO='$saldo' WHERE ID_SUBCUENTA = $id ";		
+		$query = "UPDATE SUBCUENTA SET SALDO='$saldo', SALDO_DISPONIBLE='$saldoDisponible', SALDO_RETENIDO='$saldoRetenido' WHERE ID_SUBCUENTA = $id ";		
 	}
 	
 	
@@ -256,7 +275,7 @@ function getLastMovimientos($idCuenta, $nRegMostrar){
 	$query = "SELECT DT.ID_MOVIMIENTO, DT.ID_EMPRESA, DT.ID_USUARIO, U.NOMBRE USUARIO, U.UUID, DT.ID_CUENTA, DT.CONCEPTO, DT.TIPO_CUENTA, DT.NATURALEZA, DATE_FORMAT(DT.FECHA_APLICACION, '%d/%m/%Y') FECHA_APLICACION, IF(DT.NATURALEZA='C',DT.MONTO*-1, DT.MONTO) MONTO, DATE_FORMAT(DT.FECHA_REG, '%d/%m/%Y') FECHA_REG, DT.ESTATUS, DT.NOTA ";
 	$query.= "FROM DETALLE_MOVIMIENTO DT, USUARIO U  ";
 	$query.= "WHERE DT.ID_USUARIO = U.ID_USUARIO ";
-	$query.= "AND DT.ESTATUS = 'A' AND DT.ID_CUENTA = ".$idCuenta." ";
+	$query.= "AND DT.ESTATUS IN ('A','R') AND DT.ID_CUENTA = ".$idCuenta." ";
 	$query.= "ORDER BY DT.ID_MOVIMIENTO DESC LIMIT ".$nRegMostrar;
 
 
@@ -299,6 +318,66 @@ function getLastMovimientos($idCuenta, $nRegMostrar){
     return $salida;
 }
 
+/**
+* Muestra los movimientos retenidos y pendientes de pagar
+**/
+function getMovimientosRetenidos($idMedioAcceso){
+	$bd= conectaBD();
+	
+	
+	$query = "SELECT DT.ID_MOVIMIENTO, DT.ID_EMPRESA, DT.ID_USUARIO, U.NOMBRE USUARIO, U.UUID, DT.ID_CUENTA, DT.CONCEPTO, DT.TIPO_CUENTA, DT.NATURALEZA, DATE_FORMAT(DT.FECHA_APLICACION, '%d/%m/%Y') FECHA_APLICACION, IF(DT.NATURALEZA='C',DT.MONTO*-1, DT.MONTO) MONTO, DATE_FORMAT(DT.FECHA_REG, '%d/%m/%Y') FECHA_REG, DT.ESTATUS, DT.NOTA ";
+	$query.= "FROM DETALLE_MOVIMIENTO DT, USUARIO U  ";
+	$query.= "WHERE DT.ID_USUARIO = U.ID_USUARIO ";
+	$query.= "AND DT.ESTATUS = 'R' AND DT.ID_MEDIO_ACCESO = $idMedioAcceso ";
+	$query.= "ORDER BY DT.ID_MOVIMIENTO DESC ";
+
+
+    if(!$result = $bd->query($query)){       
+        echo "Lo sentimos, este sitio web está experimentando problemas.";    
+        echo "Error: La ejecución de la consulta falló debido a: \n";
+        echo "Query: " . $query . "\n";
+        echo "Errno: " . $bd->errno . "\n";
+        echo "Error: " . $bd->error . "\n";
+        exit;
+    }
+
+    $salida = array();
+	$subTotal = 0;
+    
+    while ($line = $result->fetch_assoc()) {
+		$data = array(	"idMovimiento"=>$line["ID_MOVIMIENTO"],						
+						"idEmpresa"=>$line["ID_EMPRESA"],
+						"idUsuario"=>$line["ID_USUARIO"],
+						"usuario"=>$line["USUARIO"],
+						"uuid"=>$line["UUID"],
+						"idCuenta"=>$line["ID_CUENTA"],
+						"concepto"=>$line["CONCEPTO"],
+						"tipoCuenta"=>$line["TIPO_CUENTA"],
+						"naturaleza"=>$line["NATURALEZA"],
+						"fechaAplicacion"=>$line["FECHA_APLICACION"],
+						"monto"=>$line["MONTO"],
+						"fechaReg"=>$line["FECHA_REG"],
+						"estatus"=>$line["ESTATUS"],
+						"nota"=>$line["NOTA"]
+					  );
+		
+		$subTotal= $subTotal + $line["MONTO"];
+		
+        array_push($salida, $data);        
+    }
+    					
+    
+    $result->free();
+    $bd->close();
+	
+	$arrSalida = array(
+		"movimientos" => $salida,
+		"subTotal" => $subTotal
+	);
+	
+    return $arrSalida;
+}
+
 
 /**
 *Actualiza el saldo de la cuenta concentradora cuando una de sus subcuentas aplica un movimiento
@@ -309,7 +388,7 @@ function actualizaSaldoCuentaConcentradora($idSubCuenta){
 	
 $query = "	UPDATE CUENTA_BANCO
 			SET SALDO = (
-				SELECT SUM(SALDO) FROM SUBCUENTA
+				SELECT SUM(SALDO_DISPONIBLE) FROM SUBCUENTA
 				WHERE ID_EMPRESA = 'evert.nicolas@gmail.com'
 				AND CUENTA_EJE IN (
 				SELECT CUENTA_EJE FROM SUBCUENTA
@@ -349,5 +428,131 @@ function actualizaRatingSubcta($id, $tipoCuenta){
 	
 	return $result;
 }	
+
+
+function getUsuariosByEmpresa($idEmpresa){
+    $bd= conectaBD();
+
+	
+	$query = "SELECT ID_USUARIO, NOMBRE, UUID FROM USUARIO WHERE ID_EMPRESA = '".$idEmpresa."' ";	
+		
+
+    if(!$result = $bd->query($query)){       
+        echo "Lo sentimos, este sitio web está experimentando problemas.";    
+        echo "Error: La ejecución de la consulta falló debido a: \n";
+        echo "Query: " . $query . "\n";
+        echo "Errno: " . $bd->errno . "\n";
+        echo "Error: " . $bd->error . "\n";
+        exit;
+    }
+
+    $salida = array();
+    
+    while ($line = $result->fetch_assoc()) {
+		$data = array(	"idUsuario"=>$line["ID_USUARIO"],
+						"nombre"=>$line["NOMBRE"],
+						"uuid"=>$line["UUID"]
+					  );
+		
+		
+        array_push($salida, $data);        
+    }
+    					
+    
+    $result->free();
+    $bd->close();
+	
+    return $salida;		
+}
+
+/**
+*
+*/
+function registraUUIDusuario($idUsuario, $uuid){
+    $bd= conectaBD();
+			
+	$query = "UPDATE USUARIO SET UUID= '".$uuid."' WHERE ID_USUARIO = $idUsuario ";		
+	
+	
+    $result = $bd->query($query);    	
+	
+    $bd->close();
+	
+	return $result;
+}
+
+function getListaMediosAcceso($idEmpresa){
+    $bd= conectaBD();
+
+
+	$query = "SELECT ID_MEDIO_ACCESO, NOMBRE, PREFIJO ";
+	$query.= "FROM MEDIO_ACCESO ";
+	$query.= "WHERE ID_EMPRESA = '$idEmpresa' ";
+	$query.= "AND ESTATUS = 1 ";
+		
+
+    if(!$result = $bd->query($query)){       
+        echo "Lo sentimos, este sitio web está experimentando problemas.";    
+        echo "Error: La ejecución de la consulta falló debido a: \n";
+        echo "Query: " . $query . "\n";
+        echo "Errno: " . $bd->errno . "\n";
+        echo "Error: " . $bd->error . "\n";
+        exit;
+    }
+
+    $salida = array();
+    
+    while ($line = $result->fetch_assoc()) {
+		$data = array(	"idMedioAcceso"=>$line["ID_MEDIO_ACCESO"],
+						"nombre"=>$line["NOMBRE"],
+						"prefijo"=>$line["PREFIJO"]
+					  );
+		
+		
+        array_push($salida, $data);        
+    }
+    					
+    
+    $result->free();
+    $bd->close();
+	
+    return $salida;		
+}
+
+function getMedioAcceso($idMedioAcceso){
+    $bd= conectaBD();
+
+
+	$query = "SELECT ID_MEDIO_ACCESO, NOMBRE, PREFIJO, RETIENE_SALDO ";
+	$query.= "FROM MEDIO_ACCESO ";
+	$query.= "WHERE ID_MEDIO_ACCESO = '$idMedioAcceso' ";
+	$query.= "AND ESTATUS = 1 ";
+		
+
+    if(!$result = $bd->query($query)){       
+        echo "Lo sentimos, este sitio web está experimentando problemas.";    
+        echo "Error: La ejecución de la consulta falló debido a: \n";
+        echo "Query: " . $query . "\n";
+        echo "Errno: " . $bd->errno . "\n";
+        echo "Error: " . $bd->error . "\n";
+        exit;
+    }
+
+    $salida = array();
+    
+    while ($line = $result->fetch_assoc()) {
+		$salida = array(	"idMedioAcceso"=>$line["ID_MEDIO_ACCESO"],
+							"nombre"=>$line["NOMBRE"],
+							"prefijo"=>$line["PREFIJO"],
+							"retieneSaldo"=>($line["RETIENE_SALDO"]==1)?true:false
+						  );				        
+    }
+    					
+    
+    $result->free();
+    $bd->close();
+	
+    return $salida;		
+}
 
 ?>
