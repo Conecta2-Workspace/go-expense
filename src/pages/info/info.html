@@ -21,7 +21,9 @@
         <br>
         <strong>Servidor:</strong> {{services}}
         <br>
-        <strong>Estatus de la red:</strong>{{GLOBAL.tipoRed}}    {{GLOBAL.estatusRed}}        
+        <strong>Estatus de la red:</strong>{{GLOBAL.tipoRed}}    {{GLOBAL.estatusRed}}     
+        <br>
+        <strong>ID Usuario Conectado:</strong>{{idUsuarioApp}} <button ion-button (click)="liberaUsuario()">Liberar</button>
       </ion-card-content>
     
   </ion-card>

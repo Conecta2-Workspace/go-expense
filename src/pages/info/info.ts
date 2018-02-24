@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { GlobalService } from '../../services/GLOBAL.service';
 import { Camera, CameraOptions } from '@ionic-native/camera';
+import { Storage } from '@ionic/storage';
 
 
 /**
@@ -25,6 +26,7 @@ export class InfoPage {
   private uuid: string;
   private services: string;
   private base64Image: string;
+  private idUsuarioApp: string;
   
 
 
@@ -32,6 +34,7 @@ export class InfoPage {
                 public navParams: NavParams,
                 private GLOBAL: GlobalService,
                 public alertController : AlertController,
+                private BD: Storage,
                 private camera: Camera
   ) {
   }
@@ -39,6 +42,16 @@ export class InfoPage {
   ionViewDidLoad() {
     this.uuid = this.GLOBAL.getUUID();
     this.services = this.GLOBAL.getUrlKnt2();
+
+
+    this.BD.get('ID_USUARIO_APP')
+    .then((resp)=>{
+
+      this.idUsuarioApp = resp;
+            
+    });
+
+    
   }
 
 
@@ -71,6 +84,10 @@ export class InfoPage {
         buttons: ['OK']
       }).present();
      });
+  }
+
+  liberaUsuario(){
+    this.BD.set('ID_USUARIO_APP', null);
   }
 
 }

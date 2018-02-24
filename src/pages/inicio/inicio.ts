@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams, LoadingController, AlertController
 import { SubCuentaService } from '../../services/subcuenta.service'
 import { GlobalService } from '../../services/GLOBAL.service'
 import { RegistraCargoAbonoPage } from '../registra-cargo-abono/registra-cargo-abono'
+import { LoginPage } from '../login/login'
+import { Storage } from '@ionic/storage';
 
 
 /**
@@ -29,11 +31,15 @@ export class InicioPage {
     public loadingController: LoadingController,
     public alertController: AlertController,
     private GLOBAL:GlobalService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private BD: Storage
     ) {
 
   }
 
+  /**
+   * 
+   */
   ionViewDidLoad() {
 
     //~Arranca servicio de RED
@@ -42,8 +48,25 @@ export class InicioPage {
     //~Parametros de regreso del registro de movimientos        
     this.cargaListaActualizadaSubCta(this.navParams.get('tipoOperacion'), this.navParams.get('idCuenta'));
 
+    this.BD.get('ID_USUARIO_APP')
+    .then((resp)=>{
+
+      if(resp==null){
+        this.registraSesion();
+      }
+
+    });
+
+    
+    
+
   }
 
+  /**
+   * 
+   * @param tipoOperacionRegMov 
+   * @param idCuentaRegMov 
+   */
   cargaListaActualizadaSubCta(tipoOperacionRegMov, idCuentaRegMov){       
         //~Parametros de regreso del registro de movimientos    
         this.tipoOperacionRegMov = tipoOperacionRegMov;
@@ -75,6 +98,11 @@ export class InicioPage {
   }
 
 
+  /**
+   * 
+   * @param id 
+   * @param nombre 
+   */
   gotoRegistraCargoAbono(id, nombre){
     //this.navCtrl.push(RegistraCargoAbonoPage, {id:id, nombre:nombre, tipoCta:'SUBCTA'});
 
@@ -82,11 +110,11 @@ export class InicioPage {
       id:id, 
       nombre:nombre, 
       tipoCta:'SUBCTA'
-  });
+    });
   
   
-  modal.present();
-  modal.onDidDismiss(data=>{
+    modal.present();
+    modal.onDidDismiss(data=>{
 
     this.cargaListaActualizadaSubCta(data.tipoOperacion, data.idCuenta);
 
@@ -96,8 +124,23 @@ export class InicioPage {
 
   }
 
+  /**
+   * 
+   */
   refreshInicio(){
     this.ionViewDidLoad();
+  }
+
+  /**
+   * Valida que este registrado el usuario, de lo contrario consume el servicio
+   * para consultar los usuarios disponibles
+   */
+  public registraSesion(){
+
+    console.log(1);
+    let modal = this.modalController.create(LoginPage);  
+  
+    modal.present();
   }
 
   

@@ -14,7 +14,8 @@ import { GlobalService } from '../services/GLOBAL.service';
 import { CuentaBancoService } from '../services/cuentaBanco.service';
 import { SubCuentaService } from '../services/subcuenta.service';
 import { MovimientoService } from '../services/movimientos.service';
-
+import { MainService } from '../services/main.service'
+ 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 
@@ -25,6 +26,7 @@ import { SubcuentaPageModule } from '../pages/subcuenta/subcuenta.module';
 import { RegistraCargoAbonoPageModule } from '../pages/registra-cargo-abono/registra-cargo-abono.module';
 import { DetalleMovimientosPageModule } from '../pages/detalle-movimientos/detalle-movimientos.module';
 import { VerMovimientoPageModule } from '../pages/ver-movimiento/ver-movimiento.module';
+import { LoginPageModule } from '../pages/login/login.module';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,7 @@ import { VerMovimientoPageModule } from '../pages/ver-movimiento/ver-movimiento.
     RegistraCargoAbonoPageModule,
     DetalleMovimientosPageModule,
     VerMovimientoPageModule,
+    LoginPageModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot({
       name: '__goexpense',
@@ -58,7 +61,7 @@ import { VerMovimientoPageModule } from '../pages/ver-movimiento/ver-movimiento.
     SplashScreen,
     Camera,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    ProxyService, GlobalService,
+    ProxyService, GlobalService, MainService,
     CuentaBancoService, SubCuentaService, MovimientoService
   ]
 })
