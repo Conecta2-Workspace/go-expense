@@ -6,6 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { InicioPage } from '../pages/inicio/inicio';
 import { InfoPage } from '../pages/info/info';
 import { CuentaBancariaPage } from '../pages/cuenta-bancaria/cuenta-bancaria';
+import { CuentasPagarRetenidoPage } from '../pages/cuentas-pagar-retenido/cuentas-pagar-retenido'
 
 
 @Component({
@@ -22,6 +23,7 @@ export class MyApp {
       this.pages = [
             {titulo: 'Inicio', component: InicioPage, icon:'home'},
             {titulo: 'Cuentas de Banco', component: CuentaBancariaPage, icon:'ribbon'},
+            {titulo: 'Cuentas por pagar', component: CuentasPagarRetenidoPage, icon:'card'},
             {titulo: 'Info', component: InfoPage, icon:'bowtie'}
      ];
     platform.ready().then(() => {

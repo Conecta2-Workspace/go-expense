@@ -78,25 +78,6 @@ export class MovimientoService {
     return promise;
   }
 
-  //~Recupera el listado de movimientos
-  public getDetalleMovimientosRetenidos(idMedioAcceso:number){
-    let dataPost = JSON.stringify({ idMedioAcceso: idMedioAcceso});
-    let promise = new Promise((resolve, reject) => {
-
-      this.PROXY.postHTTP(this.movimientosAPI+"?do=doGetMovimientosRetenidos", dataPost)
-        .then((respRegMovimiento: any) => {         
-
-          resolve(respRegMovimiento); //~Recupera datos de Internet                                      
-        })
-        .catch((err) => { //~Cualquier error de conexion a Internet busca en BD          
-          reject(err);
-
-        })
-
-    });
-    return promise;
-  }
-
   //~Actualiza el campo saldo de la cuenta / subcuenta afectada
   public actualizaSaldoLocal(tipoCuenta: string, idCuenta: any, nuevoSaldo: any) {
     let resultArray: any;

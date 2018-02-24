@@ -42,20 +42,34 @@
     </ion-item>
   </ion-card>
 
+  <ion-card>
   <ion-item>
     <ion-label floating>Concepto</ion-label>     
     <ion-input type="text" [value]="txtConcepto" [(ngModel)]="txtConcepto"></ion-input>    
-
   </ion-item>
+
+  <ion-item>
+    <ion-label>Forma de pago</ion-label>
+    <ion-select [(ngModel)]="cmbFormaPago">
+      <ion-option *ngFor="let fp of listaFormaPago" value="{{ fp.idMedioAcceso }}">{{ fp.nombre }}</ion-option>        
+    </ion-select>
+   </ion-item>
  
   
     <ion-item *ngIf="isNotaActivada">
       <ion-label floating>Descripcion</ion-label>      
       <ion-textarea [value]="txtNota" [(ngModel)]="txtNota"></ion-textarea>
-    </ion-item>
-  <br>
-    <button ion-button full icon-end (click)="registraMovimiento()">        
-        Registrar
-        <ion-icon name="arrow-forward"></ion-icon>
-    </button>
+    </ion-item>  
+  </ion-card>
+    
 </ion-content>
+
+
+<ion-footer>
+  <ion-toolbar>
+      <button ion-button full icon-end (click)="registraMovimiento()">        
+          Registrar
+          <ion-icon name="arrow-forward"></ion-icon>
+      </button>
+  </ion-toolbar>
+</ion-footer>

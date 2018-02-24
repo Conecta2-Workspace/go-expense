@@ -22,6 +22,8 @@ export class DetalleMovimientosPage {
   private nombreCuentaSelected: string;
   private idCuentaSelected: number;
   private saldoSelected: string;
+  private saldoRetenidoSelected: string;
+  private saldoDisponibleSelected: string;
   private tipoCuentaSelected: string;
   private listaMovimientosByCuenta: any;
 
@@ -36,6 +38,8 @@ export class DetalleMovimientosPage {
     this.idCuentaSelected = this.navParams.get('id');
     this.nombreCuentaSelected = this.navParams.get('nombre');
     this.saldoSelected = this.navParams.get('saldo');
+    this.saldoRetenidoSelected = this.navParams.get('saldoRetenido');
+    this.saldoDisponibleSelected = this.navParams.get('saldoDisponible');
     this.tipoCuentaSelected = this.navParams.get('tipoCuenta');
 
     this.getListaMovimientos(this.idCuentaSelected);
@@ -67,7 +71,8 @@ export class DetalleMovimientosPage {
       nota:nota,
       naturaleza: naturaleza,
       idCuenta: this.idCuentaSelected,
-      tipoCuenta: this.tipoCuentaSelected
+      tipoCuenta: this.tipoCuentaSelected,
+      permiteEdicion: true
   });
   
   

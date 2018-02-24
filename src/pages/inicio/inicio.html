@@ -16,18 +16,22 @@
 
 <ion-content padding>
 
-  <button ion-button menuToggle> Menu principal</button>
+  
   <img src="assets/images/cover.jpg" alt="" (click)="refreshInicio()">
 
   <ion-list>
-    <button ion-item *ngFor="let subcta of subcuentas" (click)="gotoRegistraCargoAbono(subcta.idSubCuenta, subcta.nombre)">
+    <button ion-item *ngFor="let subcta of subcuentas" (click)="gotoRegistraCargoAbono(subcta.idSubCuenta, subcta.nombre)">       
+
       <h2>{{ subcta.nombre }}</h2>
       <p>{{ subcta.descripcion }}</p>      
-      <ion-note *ngIf="idCuentaRegMov==subcta.idSubCuenta && tipoOperacionRegMov=='C'" style="color:red" item-end>$ {{ GLOBAL.formatNumeroMoneda(  subcta.saldo  ) }}</ion-note>    
-      <ion-note *ngIf="idCuentaRegMov==subcta.idSubCuenta && tipoOperacionRegMov=='A'" style="color:blue" item-end>$ {{ GLOBAL.formatNumeroMoneda(  subcta.saldo  ) }}</ion-note>
-      <ion-note *ngIf="idCuentaRegMov!=subcta.idSubCuenta" item-end>$ {{ GLOBAL.formatNumeroMoneda(subcta.saldo) }}</ion-note>    
-    </button>
-
-    
+      <ion-note *ngIf="idCuentaRegMov==subcta.idSubCuenta && tipoOperacionRegMov=='C'" style="color:red" item-end>$ {{ GLOBAL.formatNumeroMoneda(  subcta.saldoDisponible  ) }}</ion-note>    
+      <ion-note *ngIf="idCuentaRegMov==subcta.idSubCuenta && tipoOperacionRegMov=='A'" style="color:blue" item-end>$ {{ GLOBAL.formatNumeroMoneda(  subcta.saldoDisponible  ) }}</ion-note>
+      <ion-note *ngIf="idCuentaRegMov!=subcta.idSubCuenta" item-end>$ {{ GLOBAL.formatNumeroMoneda(subcta.saldoDisponible) }}</ion-note>    
+    </button>    
   </ion-list>
+  <br><br><br><br>
 </ion-content>
+
+
+
+  

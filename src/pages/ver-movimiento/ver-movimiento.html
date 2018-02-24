@@ -50,7 +50,7 @@
       </p>
     </ion-card-content>
 
-    <button ion-button icon-right clear (click)="editarMovimiento()">
+    <button ion-button icon-right clear (click)="editarMovimiento()" *ngIf="permiteEdicion">
       <ion-icon name="create"></ion-icon>
 
     </button>

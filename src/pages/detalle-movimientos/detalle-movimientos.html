@@ -7,8 +7,29 @@
 <ion-header>
 
   <ion-navbar color="light">
-    <ion-title>{{nombreCuentaSelected}}            
+    <ion-title style="text-align: center">{{nombreCuentaSelected}}      
+      
+        
+
     </ion-title>
+
+    <ion-grid>        
+        <ion-row>
+          <ion-col col-4 style="text-align: center">
+              <ion-label stacked>Saldo</ion-label>
+              <b>{{GLOBAL.formatNumeroMoneda(saldoSelected)}}</b>
+          </ion-col>
+          <ion-col col-4 style="text-align: center">
+            <ion-label stacked>Retenido</ion-label>
+            <b>{{GLOBAL.formatNumeroMoneda(saldoRetenidoSelected)}}</b>
+          </ion-col>
+          <ion-col col-4 style="text-align: center">
+            <ion-label stacked>Disponible</ion-label>
+            <b>{{GLOBAL.formatNumeroMoneda(saldoDisponibleSelected)}}</b>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
   </ion-navbar>
 
 </ion-header>
@@ -21,7 +42,8 @@
       </ion-refresher>
       
 
-  Detalle de movimientos:
+
+  <b>Detalle de movimientos:</b>
 
   <ion-fab top right edge>
       <button ion-fab mini (click)="gotoRegistraMov()"><ion-icon name="add"></ion-icon></button>     
@@ -31,7 +53,8 @@
     <button ion-item *ngFor="let mov of listaMovimientosByCuenta" (click)="modalDetalleMovimiento(mov.idMovimiento, mov.concepto, mov.monto, mov.fechaAplicacion, mov.fechaReg, mov.usuario, mov.nota, mov.naturaleza)">
       <h2> {{ mov.concepto }}</h2>      
       <ion-note item-end>$ {{ GLOBAL.formatNumeroMoneda( mov.monto ) }}</ion-note>
-      <p><span class="fechaApliDetaMov">{{ mov.fechaAplicacion }}</span></p>
+      <p><span class="fechaApliDetaMov">{{ mov.fechaAplicacion }} <span *ngIf="mov.estatus=='R'">&nbsp; &nbsp; &nbsp; &nbsp; -Por pagar-</span></span></p>
     </button>
 </ion-list>
 </ion-content>
+

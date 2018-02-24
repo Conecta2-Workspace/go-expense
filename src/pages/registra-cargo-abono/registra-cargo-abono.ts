@@ -36,8 +36,8 @@ export class RegistraCargoAbonoPage {
   private tipoCtaEdicion: string;
 
   //~Inputs
-  private txtConcepto: string;
-  private txtMonto: number;
+  private txtConcepto: string=null;
+  private txtMonto: number=null;
   private txtNota: string="";
   private isNotaActivada;
 
@@ -48,6 +48,10 @@ export class RegistraCargoAbonoPage {
 
   private estiloTextoBotonAbono: String="blue";
   private estiloFondoBotonAbono: String="white";
+
+  //~Forma de pago
+  private listaFormaPago: any;
+  private cmbFormaPago: string;
   
 
   constructor(  private navCtrl: NavController, 
@@ -86,6 +90,10 @@ export class RegistraCargoAbonoPage {
   }
 
   ionViewDidLoad() {
+    //~Inicia la lista de formas de pago o medios de acceso
+    this.cmbFormaPago = "1"; //~Default EFECTIVO  
+    this.getFormasPago();
+
     //~Precarga informacion si inicia modo edicion
     if(this.isModoEdicion){
       this.txtConcepto = this.conceptoEdicion;
@@ -157,8 +165,19 @@ export class RegistraCargoAbonoPage {
    */
   registraMovimiento(){
     let naturaleza = this.operacion;    
+
+    //~Valida
+    if(this.txtConcepto==null){
+      this.alertController.create({title: 'ERROR',subTitle: "Favor de ingresar el concepto",buttons: ['OK']}).present();
+      return;
+    }else if(this.txtMonto==null){
+      this.alertController.create({title: 'ERROR',subTitle: "El monto es requerido",buttons: ['OK']}).present();
+      return;
+    }
+
+    
         
-    this.registraMovimientoService.registraMovimiento(this.idMovimientoEdicion, 'evert.nicolas@gmail.com',this.GLOBAL.getUUID(),this.id,this.tipoCta,this.txtConcepto,naturaleza,this.txtMonto.toString(), this.txtNota)
+    this.registraMovimientoService.registraMovimiento(this.idMovimientoEdicion, 'evert.nicolas@gmail.com', Number(this.cmbFormaPago), this.GLOBAL.getUUID(),this.id,this.tipoCta,this.txtConcepto,naturaleza,this.txtMonto.toString(), this.txtNota)
     .then((data)=>{
       console.log(data);
 
@@ -193,8 +212,23 @@ export class RegistraCargoAbonoPage {
       }).present();
     })
 
+  }
 
+  getFormasPago(){
+    this.registraMovimientoService.getMediosAcceso("evert.nicolas@gmail.com")
+    .then((resp:any) => {     
+      //console.log(resp);
+      this.listaFormaPago = resp;
+    }
+    ).catch(error => {       
 
+      //~Mensaje de error
+      this.alertController.create({
+        title: 'ERROR',
+        subTitle: 'No fue posible leer los datos. '+error,
+        buttons: ['OK']
+      }).present();
+    });
   }
 
 

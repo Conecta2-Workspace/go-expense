@@ -15,3 +15,20 @@
 
 
 <ion-nav #NAV [root]="rootPage"></ion-nav>
+
+<ion-footer>
+    <ion-toolbar no-border-top *ngIf="demo != 'Title'">
+        <ion-segment [(ngModel)]="paginas">
+            <ion-segment-button value="inicio" (click)="goToPage(pages[0].component)">
+                <ion-icon item-left name="{{pages[0].icon}}"></ion-icon> Inicio
+            </ion-segment-button>
+            <ion-segment-button value="cuentas" (click)="goToPage(pages[1].component)">
+                <ion-icon item-left name="{{pages[1].icon}}"></ion-icon> Cuentas
+            </ion-segment-button>            
+            <ion-segment-button menuToggle value="top">
+                                
+
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-footer>

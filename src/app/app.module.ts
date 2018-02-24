@@ -27,6 +27,7 @@ import { RegistraCargoAbonoPageModule } from '../pages/registra-cargo-abono/regi
 import { DetalleMovimientosPageModule } from '../pages/detalle-movimientos/detalle-movimientos.module';
 import { VerMovimientoPageModule } from '../pages/ver-movimiento/ver-movimiento.module';
 import { LoginPageModule } from '../pages/login/login.module';
+import { CuentasPagarRetenidoPageModule } from '../pages/cuentas-pagar-retenido/cuentas-pagar-retenido.module'
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { LoginPageModule } from '../pages/login/login.module';
     DetalleMovimientosPageModule,
     VerMovimientoPageModule,
     LoginPageModule,
+    CuentasPagarRetenidoPageModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot({
       name: '__goexpense',

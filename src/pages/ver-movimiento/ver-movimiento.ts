@@ -24,6 +24,7 @@ export class VerMovimientoPage {
   private usuario: any;
   private nota: any;
   private naturaleza: any;
+  private permiteEdicion: boolean;
 
   private idCuenta: number;
   private tipoCuenta: string;
@@ -41,6 +42,8 @@ export class VerMovimientoPage {
 
     this.idCuenta= this.navParams.get('idCuenta');
     this.tipoCuenta= this.navParams.get('tipoCuenta');
+
+    this.permiteEdicion = this.navParams.get('permiteEdicion');
   }
 
   ionViewDidLoad() {
