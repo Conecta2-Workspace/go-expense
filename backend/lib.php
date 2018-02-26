@@ -174,6 +174,7 @@ function registraMovimiento($mov){
 		$query = "INSERT INTO DETALLE_MOVIMIENTO (ID_MOVIMIENTO, ID_EMPRESA, ID_USUARIO, ID_CUENTA, ID_MEDIO_ACCESO, CONCEPTO, TIPO_CUENTA, NATURALEZA, FECHA_APLICACION, MONTO, FECHA_REG, ESTATUS, NOTA) ";
 		$query.= "VALUES ('0', '".$idEmpresa."', (SELECT ID_USUARIO FROM USUARIO WHERE UUID='".$uuid."'), '".$idCuenta."', '".$idMedioAcceso."', '".$concepto."', '".$tipoCuenta."', '".$naturaleza."', '".$fechaAplicacion."', '".$monto."', NOW(), '".$estatus."', '".$nota."')";
 			
+		//echo $query;	
 			
 		if(!$result = $bd->query($query)){       
 			error_log ("Lo sentimos, este sitio web está experimentando problemas.");    
@@ -616,12 +617,12 @@ function getArrayNombreCuenta($tipoCuenta){
 
 	if($tipoCuenta=="CTA"){
 
-		$query = "SSELECT ID_CUENTA_BANCO ID, NOMBRE FROM CUENTA_BANCO ";
+		$query = "SELECT ID_CUENTA_BANCO ID, NOMBRE FROM CUENTA_BANCO ";
 		$query.= "WHERE ID_EMPRESA = 'evert.nicolas@gmail.com' ";
 		$query.= "AND ESTATUS = 1 ";
 
 	}else{
-		$query = "SSELECT ID_SUBCUENTA ID, NOMBRE FROM SUBCUENTA ";
+		$query = "SELECT ID_SUBCUENTA ID, NOMBRE FROM SUBCUENTA ";
 		$query.= "WHERE ID_EMPRESA = 'evert.nicolas@gmail.com' ";
 		$query.= "AND ESTATUS = 1 ";
 	}
@@ -666,4 +667,43 @@ function activaMovimientoRetenido($listaIdMovimiento){
 	
 	return $result;
 }
+
+
+function getCuentasInvolucraLiberacion($listaIdMovimiento){
+    $bd= conectaBD();
+
+	$query = "SELECT DISTINCT ID_CUENTA, TIPO_CUENTA FROM DETALLE_MOVIMIENTO WHERE ID_MOVIMIENTO IN ($listaIdMovimiento) ";
+	
+
+    if(!$result = $bd->query($query)){       
+        echo "Lo sentimos, este sitio web está experimentando problemas.";    
+        echo "Error: La ejecución de la consulta falló debido a: \n";
+        echo "Query: " . $query . "\n";
+        echo "Errno: " . $bd->errno . "\n";
+        echo "Error: " . $bd->error . "\n";
+        exit;
+    }
+
+    $salida = array();
+    
+    while ($line = $result->fetch_assoc()) {
+		
+		$data = array(	"idCuenta"=>$line["ID_CUENTA"],
+						"tipoCuenta"=>$line["TIPO_CUENTA"]
+					  );
+		
+		
+        array_push($salida, $data);      					       
+    }
+    					
+    
+    $result->free();
+    $bd->close();
+	
+    return $salida;		
+}
+
+
+
+
 ?>

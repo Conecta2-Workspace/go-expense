@@ -38,4 +38,8 @@ if($_GET["do"]=="doGetMovimientosRetenidos"){
 if($_GET["do"]=="doArrastreSaldos"){
 	doArrastreSaldos();
 }
+
+if($_GET["do"]=="doLiberarMovRetenido"){
+	doLiberarMovRetenido();
+}
 ?>

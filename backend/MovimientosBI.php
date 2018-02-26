@@ -330,5 +330,54 @@ function arrastreSaldosCuenta($idCuenta, $tipoCuenta){
 }
 
 
+function doLiberarMovRetenido(){
+	$resp = array();
+	$isExito = 0;
+	$msgError = "";
+	try {
+		$postdata = file_get_contents("php://input");
+		if (isset($postdata)) {
+			
+			
+			//~Limpia JSON de entrada
+			$postdata = str_replace('\"','"',$postdata);
+			$postdata = str_replace('"{"','{"',$postdata);
+			$postdata = str_replace('"}"','"}',$postdata);
+			
+			//echo $postdata;
+			$request = (array) json_decode($postdata, true);		
+			
+			$listaMov = $request['listaMov'];
+
+			//~Activa movimientos
+			activaMovimientoRetenido($listaMov);
+			
+			//~Realiza el arrastre de saldos por cuenta involucrada
+			$arrCuentas = getCuentasInvolucraLiberacion($listaMov);
+			
+			$c=0;
+			foreach($arrCuentas as $cuenta){								
+				arrastreSaldosCuenta($cuenta["idCuenta"], $cuenta["tipoCuenta"]);
+				$c++;
+			}
+			
+			$resp = array("ctasAfectadas"=>$c);
+			$isExito = 1;
+			
+		}
+		else {
+			echo "Not called properly with username parameter!";
+		}
+	}catch (Exception $e) {
+		
+	}	
+	$salida = array(			
+				"exito"=>$isExito,
+				"error"=>$msgError,
+				"data"=> $resp
+				);		
+
+	echo json_encode($salida);
+}
 
 ?>
