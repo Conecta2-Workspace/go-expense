@@ -6,22 +6,21 @@
 -->
 <ion-header>
 
-  <ion-navbar color="secondary">            
-          <table width="100%">
-            <tr>
-              <td>
-                  <ion-title (click)="dismiss()">{{nombre  | slice:0:18 }}</ion-title>
-              </td>
-              <td >
-                  <div text-right>
-                  <button ion-button round  color="light" (click)="presentActionSheet()">
-                      <ion-icon name="images"></ion-icon>                      
+  <ion-navbar color="secondary">  
+    
+      <ion-toolbar>
+          <ion-buttons start>
+              <button ion-button icon-only color="royal" (click)="dismiss()">
+                  <ion-icon name="close"></ion-icon>
+              </button>              
+          </ion-buttons>
+          <ion-title (click)="dismiss()">{{nombre  | slice:0:18 }}</ion-title>
+          <ion-buttons end>
+              <button ion-button round  color="light" (click)="presentActionSheet()">
+                  <ion-icon name="images"></ion-icon>                      
               </button>
-            </div>
-              </td>
-            </tr>
-          </table>
-                
+          </ion-buttons>
+        </ion-toolbar>          
       
     
   </ion-navbar>
@@ -67,7 +66,7 @@
 
 <ion-footer>
   <ion-toolbar>
-      <button ion-button full icon-end (click)="registraMovimiento()">        
+      <button ion-button full icon-end [disabled]="registraButton" (click)="registraMovimiento()">        
           Registrar
           <ion-icon name="arrow-forward"></ion-icon>
       </button>

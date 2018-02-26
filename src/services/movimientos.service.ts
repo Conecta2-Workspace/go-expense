@@ -190,6 +190,28 @@ export class MovimientoService {
     return promise;
   }
 
+  /**
+   * Liberacion masiva de movimientos
+   * @param listaMov 
+   */
+  public liberarMovRetenido(listaMov:string){
+    let dataPost = JSON.stringify({ listaMov: listaMov});
+    let promise = new Promise((resolve, reject) => {
+
+      this.PROXY.postHTTP(this.movimientosAPI+"?do=doLiberarMovRetenido", dataPost)
+        .then((resp: any) => {         
+
+          resolve(resp); //~Recupera datos de Internet                                      
+        })
+        .catch((err) => { //~Cualquier error de conexion a Internet busca en BD          
+          reject(err);
+
+        })
+
+    });
+    return promise;
+  }
+
 
   
 }

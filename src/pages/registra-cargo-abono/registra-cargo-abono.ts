@@ -40,6 +40,7 @@ export class RegistraCargoAbonoPage {
   private txtMonto: number=null;
   private txtNota: string="";
   private isNotaActivada;
+  private registraButton: boolean = false;
 
   //~Eleccion cargo/abono
   private operacion: string; //C o A
@@ -163,20 +164,21 @@ export class RegistraCargoAbonoPage {
   /**
    * Consume servicio para registrar el movimiento
    */
-  registraMovimiento(){
+  registraMovimiento(){    
     let naturaleza = this.operacion;    
 
     //~Valida
     if(this.txtConcepto==null){
-      this.alertController.create({title: 'ERROR',subTitle: "Favor de ingresar el concepto",buttons: ['OK']}).present();
+      this.alertController.create({title: 'ERROR',subTitle: "Favor de ingresar el concepto",buttons: ['OK']}).present();      
       return;
     }else if(this.txtMonto==null){
-      this.alertController.create({title: 'ERROR',subTitle: "El monto es requerido",buttons: ['OK']}).present();
+      this.alertController.create({title: 'ERROR',subTitle: "El monto es requerido",buttons: ['OK']}).present();      
       return;
     }
 
     
-        
+    this.registraButton = true;
+
     this.registraMovimientoService.registraMovimiento(this.idMovimientoEdicion, 'evert.nicolas@gmail.com', Number(this.cmbFormaPago), this.GLOBAL.getUUID(),this.id,this.tipoCta,this.txtConcepto,naturaleza,this.txtMonto.toString(), this.txtNota)
     .then((data)=>{
       console.log(data);
@@ -203,6 +205,8 @@ export class RegistraCargoAbonoPage {
       this.viewCtrl.dismiss({tipoOperacion:this.operacion, idCuenta:this.id});
 
     }).catch(error=>{      
+
+      this.registraButton = false;
 
       //~Mensaje de error
       this.alertController.create({

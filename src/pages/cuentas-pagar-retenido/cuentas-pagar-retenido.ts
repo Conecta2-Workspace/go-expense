@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, ModalController, LoadingController } from 'ionic-angular';
 import { MovimientoService } from '../../services/movimientos.service'
 import { GlobalService } from '../../services/GLOBAL.service'
 import { VerMovimientoPage } from '../ver-movimiento/ver-movimiento'
@@ -30,6 +30,7 @@ export class CuentasPagarRetenidoPage {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams, 
               public registraMovimientoService: MovimientoService,
+              public loadingController: LoadingController,
               public alertController : AlertController,
               private modalController: ModalController,
               private GLOBAL:GlobalService) {
@@ -106,6 +107,52 @@ export class CuentasPagarRetenidoPage {
 
     console.log(this.selectMovimientos);
 
+  }
+
+  aplicarLiberacion(){
+    let concatMovimientos: string="";
+
+    if(this.selectMovimientos.length > 0){
+
+      let loader = this.loadingController.create();
+      loader.present();
+
+      for(let i=0; i<this.selectMovimientos.length; i++){
+        let idMOvimiento = this.selectMovimientos[i];
+
+        if(i<(this.selectMovimientos.length)-1){
+          concatMovimientos=concatMovimientos+idMOvimiento+",";
+        }else{
+          concatMovimientos=concatMovimientos+idMOvimiento;
+        }
+      }
+
+      this.registraMovimientoService.liberarMovRetenido(concatMovimientos)
+      .then((data:any)=>{
+        loader.dismiss();
+
+        console.log(data);
+        this.listaMovimientosByCuenta = null;
+        this.subTotal = 0;
+  
+        //Resetea acumulador y seleccion
+        this.montoSeleccion = 0;
+        this.selectMovimientos = [];
+  
+      }).catch(error=>{
+        loader.dismiss();
+
+
+        //~Mensaje de error
+        this.alertController.create({title: 'ERROR',subTitle: 'No fue posible realizar la liberacion. '+error,buttons: ['OK']}).present();
+
+        console.log(error);
+      });
+
+    }else{
+      this.alertController.create({title: 'ERROR',subTitle: 'Elegir almenos un movimiento...',buttons: ['OK']}).present();
+    }
+       
   }
 
 }
