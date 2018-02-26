@@ -167,6 +167,29 @@ export class MovimientoService {
     return promise;
   }
 
+  /**
+   * Realiza el arrastre de saldos por subcuenta o cuenta
+   * @param idCuenta 
+   * @param tipoCuenta CTA º SUBCTA
+   */
+  public realizaArrasteSaldos(idCuenta: number, tipoCuenta: string){
+    let dataPost = JSON.stringify({ idCuenta: idCuenta, tipoCuenta:tipoCuenta});
+    let promise = new Promise((resolve, reject) => {
+
+      this.PROXY.postHTTP(this.movimientosAPI+"?do=doArrastreSaldos", dataPost)
+        .then((resp: any) => {         
+
+          resolve(resp);
+        })
+        .catch((err) => {
+          reject(err);
+
+        })
+
+    });
+    return promise;
+  }
+
 
   
 }

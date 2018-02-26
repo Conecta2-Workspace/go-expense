@@ -7,8 +7,18 @@
 <ion-header>
 
   <ion-navbar color="light" >
-    <button ion-button menuToggle="right" icon-only > <ion-icon name='menu'></ion-icon> </button>
-    <ion-title>{{nombreBancoSelected}}</ion-title>    
+
+      <ion-toolbar>
+          <ion-buttons start>
+              <button ion-button menuToggle="right" icon-only > <ion-icon name='menu'></ion-icon> </button>
+          </ion-buttons>
+          <ion-title>{{nombreBancoSelected}}</ion-title>
+  
+        </ion-toolbar>
+
+
+    
+        
   </ion-navbar>
 
 </ion-header>
@@ -24,10 +34,24 @@
     
 
   <ion-list>
-    <button ion-item *ngFor="let subcta of subcuentas" (click)="gotoDetalleMovimientosPage(subcta.idSubCuenta, subcta.nombre, subcta.saldo, subcta.saldoRetenido, subcta.saldoDisponible)">
-      <h2>{{ subcta.nombre }}</h2>          
-      <p>{{ subcta.descripcion }}</p>
-      <ion-note item-end>$ {{ GLOBAL.formatNumeroMoneda( subcta.saldoDisponible ) }}</ion-note>
-    </button>
+    <ion-item-sliding *ngFor="let subcta of subcuentas" #item>
+      <ion-item (click)="gotoDetalleMovimientosPage(subcta.idSubCuenta, subcta.nombre, subcta.saldo, subcta.saldoRetenido, subcta.saldoDisponible)">      
+        <h2>{{ subcta.nombre }}</h2>          
+        <p>{{ subcta.descripcion }}</p>
+        <ion-note item-end>$ {{ GLOBAL.formatNumeroMoneda( subcta.saldoDisponible ) }}</ion-note>
+      </ion-item>
+
+      <ion-item-options>
+          <button ion-button color="secondary" (click)="realizarArrastreSaldos(subcta.idSubCuenta)">
+            <ion-icon name="pulse"></ion-icon>
+            Reconstruye
+          </button>
+          <button ion-button color="dark" (click)="gotoRegistraMov(subcta.idSubCuenta, subcta.nombre)">
+            <ion-icon name="add"></ion-icon>
+            Registrar
+          </button>
+      </ion-item-options>
+
+    </ion-item-sliding>
 </ion-list>
 </ion-content>

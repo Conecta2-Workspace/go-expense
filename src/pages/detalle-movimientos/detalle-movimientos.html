@@ -7,11 +7,16 @@
 <ion-header>
 
   <ion-navbar color="light">
-    <ion-title style="text-align: center">{{nombreCuentaSelected}}      
-      
-        
 
-    </ion-title>
+      <ion-toolbar>
+          <ion-title>{{nombreCuentaSelected}}</ion-title>
+          <ion-buttons end>
+            <button ion-button icon-only color="royal" (click)="dismiss()">
+              <ion-icon name="close"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-toolbar>
+
 
     <ion-grid>        
         <ion-row>

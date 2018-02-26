@@ -6,8 +6,21 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>Cuentas por pagar</ion-title>
+
+
+  <ion-navbar color="light" >
+
+      <ion-toolbar>
+          <ion-buttons start>
+              <button ion-button menuToggle="right" icon-only > <ion-icon name='menu'></ion-icon> </button>
+          </ion-buttons>
+          <ion-title>Cuentas por pagar</ion-title>
+  
+        </ion-toolbar>
+
+
+    
+        
   </ion-navbar>
 
 </ion-header>
@@ -24,18 +37,43 @@
 
 
     <ion-list>
-        <button ion-item *ngFor="let mov of listaMovimientosByCuenta" (click)="modalDetalleMovimiento(mov.idMovimiento, mov.concepto, mov.monto, mov.fechaAplicacion, mov.fechaReg, mov.usuario, mov.nota, mov.naturaleza, mov.idCuenta, mov.idTipoCuenta)">
-          <h2> {{ mov.concepto }}</h2>      
-          <ion-note item-end>$ {{ GLOBAL.formatNumeroMoneda( mov.monto ) }}</ion-note>
-          <p><span class="fechaApliDetaMov">{{ mov.fechaAplicacion }} <span *ngIf="mov.estatus=='R'">&nbsp; &nbsp; &nbsp; &nbsp; -Por pagar-</span></span></p>
-
+        <button ion-item *ngFor="let mov of listaMovimientosByCuenta">
+          
+          <ion-label>
+            <ion-grid>
+              <ion-row>
+                <ion-col col-12>{{ mov.concepto }}</ion-col>
+              </ion-row>
+              <ion-row class="fuentePequena">
+                <ion-col col-8 ><span class="fuenteMini">{{ mov.fechaAplicacion }}</span> <span>&nbsp;{{mov.nombreCuenta}}</span></ion-col>                
+                <ion-col col-4><span item-end> <b>$ {{ GLOBAL.formatNumeroMoneda( mov.monto ) }}</b></span></ion-col>
+              </ion-row>              
+            </ion-grid>
+          </ion-label>
+          <ion-checkbox style="padding-left:0px;" color="primary" checked="false" (ionChange)="acumSeleccion($event, mov.monto, mov.idMovimiento)"></ion-checkbox>
+          
+     
+          
+          
+          
+          
         </button>
 
+        
         <button ion-item>
-            <h2>Sub Total</h2>      
-            <ion-note item-end>$ {{ GLOBAL.formatNumeroMoneda(subTotal) }}</ion-note>              
-          </button>
+            <h2 class="fuenteNegrita">Sub Total</h2>      
+            <ion-note item-end class="fuenteNegrita">$ {{ GLOBAL.formatNumeroMoneda(montoSeleccion) }}</ion-note>              
+        </button>
+        <button ion-item>
+            <h2 class="fuenteNegrita">Total</h2>      
+            <ion-note item-end class="fuenteNegrita">$ {{ GLOBAL.formatNumeroMoneda(subTotal) }}</ion-note>              
+        </button>
     </ion-list>
+
+
+    <div text-center style="padding-bottom:50px;">
+        <button ion-button >Aplicar</button>
+    </div>
 
     
 

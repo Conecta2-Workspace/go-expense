@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, ViewController } from 'ionic-angular';
 import { MovimientoService } from '../../services/movimientos.service'
 import { VerMovimientoPage } from '../ver-movimiento/ver-movimiento'
 import { RegistraCargoAbonoPage } from '../registra-cargo-abono/registra-cargo-abono'
@@ -31,6 +31,7 @@ export class DetalleMovimientosPage {
               public navParams: NavParams,
               public registraMovimientoService: MovimientoService,
               private modalController: ModalController,
+              private viewCtrl : ViewController,
               private GLOBAL:GlobalService) {
   }
 
@@ -96,6 +97,10 @@ export class DetalleMovimientosPage {
       console.log('Async operation has ended');
       refresher.complete();
     }, 1000);
+  }
+
+  dismiss() {
+    this.viewCtrl.dismiss();
   }
 
 }

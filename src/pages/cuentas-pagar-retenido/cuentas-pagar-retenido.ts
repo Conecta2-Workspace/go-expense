@@ -23,6 +23,10 @@ export class CuentasPagarRetenidoPage {
   private listaFormaPago: any;
   private cmbFormaPago: string;
 
+  //Seleccion
+  private montoSeleccion: number = 0;
+  private selectMovimientos: any = [];
+
   constructor(public navCtrl: NavController, 
               public navParams: NavParams, 
               public registraMovimientoService: MovimientoService,
@@ -50,7 +54,10 @@ export class CuentasPagarRetenidoPage {
       console.log(data);
       this.listaMovimientosByCuenta = data.movimientos;
       this.subTotal = data.subTotal;
-      
+
+      //Resetea acumulador y seleccion
+      this.montoSeleccion = 0;
+      this.selectMovimientos = [];
 
     }).catch(error=>{
       console.log("super error root");
@@ -75,24 +82,29 @@ export class CuentasPagarRetenidoPage {
     });
   }
 
-  modalDetalleMovimiento(idMovimiento, concepto, monto, fechaAplicacion, fechaReg, usuario, nota, naturaleza, idCuenta, tipoCuenta){
-    
-    let modal = this.modalController.create(VerMovimientoPage, {
-      idMovimiento:idMovimiento, 
-      concepto:concepto, 
-      monto:monto, 
-      fechaAplicacion:fechaAplicacion, 
-      fechaReg:fechaReg, 
-      usuario:usuario, 
-      nota:nota,
-      naturaleza: naturaleza,
-      idCuenta: idCuenta,
-      tipoCuenta: tipoCuenta,
-      permiteEdicion: false
-    });
 
-    modal.present();
-    modal.onDidDismiss(data=>console.log(data));
+  acumSeleccion(e, monto, idMovimiento){
+    let valor: number;
+
+    let isChecked = e.checked;
+
+    if(isChecked){
+      valor = Number(monto) * -1;
+      this.selectMovimientos.push(idMovimiento);
+    }else{      
+      let index = this.selectMovimientos.indexOf(idMovimiento);
+      if (index > -1) {
+        this.selectMovimientos.splice(index, 1);
+      }
+       
+      valor = Number(monto);
+    }
+
+    this.montoSeleccion = this.montoSeleccion + valor;
+
+    
+
+    console.log(this.selectMovimientos);
 
   }
 
