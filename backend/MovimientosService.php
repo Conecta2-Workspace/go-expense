@@ -34,4 +34,8 @@ if($_GET["do"]=="doGetListaMediosAcceso"){
 if($_GET["do"]=="doGetMovimientosRetenidos"){
 	doGetMovimientosRetenidos();
 }
+
+if($_GET["do"]=="doArrastreSaldos"){
+	doArrastreSaldos();
+}
 ?>

@@ -59,6 +59,8 @@ function doRegistraMovimiento(){
 			$idMovimiento = registraMovimiento($request);
 			
 			if($idMovimiento>0){
+				
+				
 				//~Se retiene el saldo
 				if($operacionRetieneSaldoMA && $naturaleza=="C"){
 					$saldoNvo = $saldoAntes;
@@ -241,5 +243,92 @@ function doGetMovimientosRetenidos(){
 
 	echo json_encode($salida);
 }
+
+
+function doArrastreSaldos(){
+	$resp = array();
+	$isExito = 0;
+	$msgError = "";
+	try {
+		$postdata = file_get_contents("php://input");
+		if (isset($postdata)) {
+			
+			
+			//~Limpia JSON de entrada
+			$postdata = str_replace('\"','"',$postdata);
+			$postdata = str_replace('"{"','{"',$postdata);
+			$postdata = str_replace('"}"','"}',$postdata);
+			
+			//echo $postdata;
+			$request = (array) json_decode($postdata, true);		
+			
+			$idCuenta = $request['idCuenta'];
+			$tipoCuenta = $request['tipoCuenta'];
+						
+			$saldos = arrastreSaldosCuenta($idCuenta, $tipoCuenta);
+			$resp = $saldos["data"];
+			$isExito = 1;
+			
+		}
+		else {
+			echo "Not called properly with username parameter!";
+		}
+	}catch (Exception $e) {
+		
+	}	
+	$salida = array(			
+				"exito"=>$isExito,
+				"error"=>$msgError,
+				"data"=> $resp
+				);		
+
+	echo json_encode($salida);
+}
+
+/**
+ * 
+ * Tipo Cuenta: CTA SUBCTA
+ */
+function arrastreSaldosCuenta($idCuenta, $tipoCuenta){
+	$resp = array();
+	$isExito = 0;
+	$msgError = "";
+	try {
+
+		// Recupera los saldos arrastrando los movimeintos
+		$saldosMov = getSaldosArrastre($idCuenta);
+		$saldoDisponible = $saldosMov["A"] + $saldosMov["R"];
+		$saldoRetenido = $saldosMov["R"] * -1;
+		$saldo = $saldoDisponible + $saldoRetenido;
+
+
+		// Actualiza el saldo
+		actualizaSaldoCuentaDuro($idCuenta, $tipoCuenta, $saldo, $saldoRetenido, $saldoDisponible);
+
+		// Actualiza el saldo de la cuenta concentradora
+		if($tipoCuenta=="SUBCTA"){
+			actualizaSaldoCuentaConcentradora($idCuenta);
+		}
+
+		$resp = array(	"saldo"=>$saldo,
+						"saldoDisponible"=>$saldoDisponible,
+						"saldoRetenido"=>$saldoRetenido
+		);
+
+		$isExito = 1;
+		
+	}catch (Exception $e) {
+		
+	}	
+	$salida = array(			
+				"exito"=>$isExito,
+				"error"=>$msgError,
+				"data"=> $resp
+				);		
+
+	return $salida;
+}
+
+
 
 ?>

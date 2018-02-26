@@ -164,7 +164,9 @@ function registraMovimiento($mov){
 		
 		//~Calcula estatus
 		$estatus = "A";
-		if($operacionRetieneSaldoMA){
+
+		//La retencion solo aplica para CARGOS
+		if($operacionRetieneSaldoMA && $naturaleza=="C"){
 			$estatus = "R";
 			$nota = "[RETENIDO] ".$nota;
 		}
@@ -322,14 +324,23 @@ function getLastMovimientos($idCuenta, $nRegMostrar){
 * Muestra los movimientos retenidos y pendientes de pagar
 **/
 function getMovimientosRetenidos($idMedioAcceso){
+
+	
+
+
 	$bd= conectaBD();
 	
 	
-	$query = "SELECT DT.ID_MOVIMIENTO, DT.ID_EMPRESA, DT.ID_USUARIO, U.NOMBRE USUARIO, U.UUID, DT.ID_CUENTA, DT.CONCEPTO, DT.TIPO_CUENTA, DT.NATURALEZA, DATE_FORMAT(DT.FECHA_APLICACION, '%d/%m/%Y') FECHA_APLICACION, IF(DT.NATURALEZA='C',DT.MONTO*-1, DT.MONTO) MONTO, DATE_FORMAT(DT.FECHA_REG, '%d/%m/%Y') FECHA_REG, DT.ESTATUS, DT.NOTA ";
+	$query = "SELECT DT.ID_MOVIMIENTO, DT.ID_EMPRESA, DT.ID_USUARIO, U.NOMBRE USUARIO, U.UUID, DT.ID_CUENTA, DT.CONCEPTO, DT.TIPO_CUENTA, DT.NATURALEZA, DATE_FORMAT(DT.FECHA_APLICACION, '%d/%m/%Y') FECHA_APLICACION, IF(DT.NATURALEZA='C',DT.MONTO*-1, DT.MONTO) MONTO, DATE_FORMAT(DT.FECHA_REG, '%d/%m/%Y') FECHA_REG, DT.ESTATUS, DT.NOTA, ";
+	$query.= "CASE  ";
+	$query.= "WHEN DT.TIPO_CUENTA='CTA' THEN (SELECT C.NOMBRE FROM CUENTA_BANCO C WHERE C.ID_CUENTA_BANCO = DT.ID_CUENTA)  ";
+	$query.= "ELSE (SELECT C.NOMBRE FROM SUBCUENTA C WHERE C.ID_SUBCUENTA = DT.ID_CUENTA)  ";
+	$query.= "END NOMBRE_CUENTA   ";
 	$query.= "FROM DETALLE_MOVIMIENTO DT, USUARIO U  ";
 	$query.= "WHERE DT.ID_USUARIO = U.ID_USUARIO ";
 	$query.= "AND DT.ESTATUS = 'R' AND DT.ID_MEDIO_ACCESO = $idMedioAcceso ";
 	$query.= "ORDER BY DT.ID_MOVIMIENTO DESC ";
+
 
 
     if(!$result = $bd->query($query)){       
@@ -353,6 +364,7 @@ function getMovimientosRetenidos($idMedioAcceso){
 						"idCuenta"=>$line["ID_CUENTA"],
 						"concepto"=>$line["CONCEPTO"],
 						"tipoCuenta"=>$line["TIPO_CUENTA"],
+						"nombreCuenta"=>$line["NOMBRE_CUENTA"],
 						"naturaleza"=>$line["NATURALEZA"],
 						"fechaAplicacion"=>$line["FECHA_APLICACION"],
 						"monto"=>$line["MONTO"],
@@ -555,4 +567,103 @@ function getMedioAcceso($idMedioAcceso){
     return $salida;		
 }
 
+function getSaldosArrastre($idCuenta){
+    $bd= conectaBD();
+
+
+	$query = "SELECT 	SUM(IF(DT.NATURALEZA='C',DT.MONTO*-1, DT.MONTO)) MONTO, ";
+	$query.= "        ESTATUS ";
+	$query.= "FROM DETALLE_MOVIMIENTO DT ";
+	$query.= "WHERE ID_CUENTA = $idCuenta ";
+	$query.= "GROUP BY ESTATUS ";
+
+		
+
+    if(!$result = $bd->query($query)){       
+        echo "Lo sentimos, este sitio web está experimentando problemas.";    
+        echo "Error: La ejecución de la consulta falló debido a: \n";
+        echo "Query: " . $query . "\n";
+        echo "Errno: " . $bd->errno . "\n";
+        echo "Error: " . $bd->error . "\n";
+        exit;
+    }
+
+    $salida = array("A"=>0,"R"=>0,"C"=>0);
+    
+    while ($line = $result->fetch_assoc()) {
+		if($line["ESTATUS"]=="A"){
+			$salida["A"] = $line["MONTO"];
+		}else if($line["ESTATUS"]=="R"){
+			$salida["R"] = $line["MONTO"];
+		}if($line["ESTATUS"]=="C"){
+			$salida["C"] = $line["MONTO"];
+		}			        
+    }
+    
+    $result->free();
+    $bd->close();
+	
+    return $salida;		
+}
+
+/**
+ * Recupera un arreglo asociativo con el nombre de las cuentas existentes
+ * 
+ */
+function getArrayNombreCuenta($tipoCuenta){
+    $bd= conectaBD();
+
+
+	if($tipoCuenta=="CTA"){
+
+		$query = "SSELECT ID_CUENTA_BANCO ID, NOMBRE FROM CUENTA_BANCO ";
+		$query.= "WHERE ID_EMPRESA = 'evert.nicolas@gmail.com' ";
+		$query.= "AND ESTATUS = 1 ";
+
+	}else{
+		$query = "SSELECT ID_SUBCUENTA ID, NOMBRE FROM SUBCUENTA ";
+		$query.= "WHERE ID_EMPRESA = 'evert.nicolas@gmail.com' ";
+		$query.= "AND ESTATUS = 1 ";
+	}
+
+
+		
+
+    if(!$result = $bd->query($query)){       
+        echo "Lo sentimos, este sitio web está experimentando problemas.";    
+        echo "Error: La ejecución de la consulta falló debido a: \n";
+        echo "Query: " . $query . "\n";
+        echo "Errno: " . $bd->errno . "\n";
+        echo "Error: " . $bd->error . "\n";
+        exit;
+    }
+
+    $salida = array();
+    
+    while ($line = $result->fetch_assoc()) {
+		$salida[$line["ID"]] = $line["NOMBRE"];				        
+    }
+    					
+    
+    $result->free();
+    $bd->close();
+	
+    return $salida;		
+}
+
+
+function activaMovimientoRetenido($listaIdMovimiento){
+    $bd= conectaBD();
+			
+	$query = "UPDATE DETALLE_MOVIMIENTO SET ESTATUS= 'A', NOTA=REPLACE(NOTA,'[RETENIDO]',CONCAT('[LIBERADO ',DATE_FORMAT(NOW(), '%d.%m.%Y'),']')) WHERE ID_MOVIMIENTO IN ($listaIdMovimiento) ";
+	
+	
+	//SELECT NOTA, REPLACE(NOTA,'[RETENIDO]',CONCAT('[LIBERADO ',DATE_FORMAT(NOW(), '%d.%m.%Y'),']')) FROM `detalle_movimiento` WHERE ID_MOVIMIENTO = 157
+
+    $result = $bd->query($query);    	
+	
+    $bd->close();
+	
+	return $result;
+}
 ?>
