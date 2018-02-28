@@ -42,6 +42,9 @@
       </ion-item>
 
       <ion-item-options>
+          <button ion-button color="favorito" (click)="setFavorito(subcta.idSubCuenta)">
+              <ion-icon name="star" color="favoritoBack"></ion-icon>              
+          </button>
           <button ion-button color="secondary" (click)="realizarArrastreSaldos(subcta.idSubCuenta)">
             <ion-icon name="pulse"></ion-icon>
             Reconstruye

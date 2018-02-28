@@ -1,14 +1,20 @@
 import { Injectable } from "@angular/core";
 import { Device } from '@ionic-native/device';
 import { Network } from '@ionic-native/network';
+import { Storage } from '@ionic/storage';
 
 @Injectable()
 export class GlobalService {  
   public estatusRed: string = "/";
-  public tipoRed: string = "/";  
+  public tipoRed: string = "/";
+  private selectSubcuentasFavorito: any = [];
 
   constructor(private device: Device,
-              private network:Network) {
+              private network:Network,
+              private BD: Storage) {
+
+              this.BD.get('FAV_SUBCTA')
+              .then((resp)=>{ this.selectSubcuentasFavorito = resp; });
   }
 
   /**
@@ -31,7 +37,8 @@ export class GlobalService {
     //return "http://knt2.com/app/";
 
     //~Pruebas
-    return "http://localhost/";
+    //return "http://localhost/";
+    return "http://192.168.100.9/";
   }
   
   public iniciaServicioDatosRed(){
@@ -87,6 +94,35 @@ export class GlobalService {
         return val.replace(/\./g, '');
     }
   }  
+
+
+  public pushSubCtaFavorito(idSubCuenta){
+    let index = this.selectSubcuentasFavorito.indexOf(idSubCuenta);
+    if (index > -1) {
+      this.selectSubcuentasFavorito.splice(index, 1);
+    }
+
+    this.selectSubcuentasFavorito.push(idSubCuenta);
+
+    this.BD.set('FAV_SUBCTA', this.selectSubcuentasFavorito);
+  }
+
+  public getSubCtaFavorito(){
+    let concatID: string ="";
+    for(let i=0; i<this.selectSubcuentasFavorito.length; i++){
+      let id = this.selectSubcuentasFavorito[i];
+
+      if(i<(this.selectSubcuentasFavorito.length)-1){
+        concatID=concatID+id+",";
+      }else{
+        concatID=concatID+id;
+      }
+    }   
+    
+    return concatID;
+  }
+
+
 
 
 }

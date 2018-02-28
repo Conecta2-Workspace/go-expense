@@ -128,4 +128,17 @@ export class SubcuentaPage {
     modal.onDidDismiss(data=>console.log(data));     
   }
 
+  setFavorito(idSubcuenta){
+    let loader = this.loadingController.create();
+    loader.present();
+
+    this.GLOBAL.pushSubCtaFavorito(idSubcuenta);
+    console.log(this.GLOBAL.getSubCtaFavorito());
+
+
+    loader.dismiss();
+
+    
+  }
+
 }

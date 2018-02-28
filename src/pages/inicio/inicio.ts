@@ -57,9 +57,6 @@ export class InicioPage {
 
     });
 
-    
-    
-
   }
 
   /**
