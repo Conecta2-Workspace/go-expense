@@ -34,11 +34,11 @@ export class GlobalService {
    */
   public getUrlKnt2(){
     //~Produccion     
-    //return "http://knt2.com/app/";
+    return "http://knt2.com/app/";
 
     //~Pruebas
     //return "http://localhost/";
-    return "http://192.168.100.9/";
+    //return "http://192.168.100.9/";
   }
   
   public iniciaServicioDatosRed(){
